@@ -44,6 +44,9 @@ export default function Navbar() {
       <Link to="/sponsors" style={{ color: "#fff" }}>
         Sponsors
       </Link>
+      <Link to="/loan" style={{ color: "#fff" }}>
+        Loan
+      </Link>
       <Link to="/admin" style={{ color: "#fff" }}>
         Admin
       </Link>

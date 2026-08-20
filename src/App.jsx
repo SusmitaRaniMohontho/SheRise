@@ -15,6 +15,7 @@ import Help from "./pages/Help";
 
 import Jobs from "./pages/Jobs";
 import Sponsors from "./pages/Sponsors";
+import Loan from "./pages/Loan";
 import AdminDashboard from "./pages/AdminDashboard";
 
 export default function App() {
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/help" element={<Help />} />
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/sponsors" element={<Sponsors />} />
+          <Route path="/loan" element={<Loan />} />
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
       </div>
