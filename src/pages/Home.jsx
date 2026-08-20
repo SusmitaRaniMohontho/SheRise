@@ -21,17 +21,19 @@ function Home() {
 
   return (
     <div style={styles.pageWrapper}>
-      {/* 1. Large Screen Hero Section (Picture focus) */}
+      {/* 1. Large Screen Hero Section */}
       <div style={styles.heroSection}>
         <div style={styles.heroOverlay}></div>
 
-        {/* Corner Profile Button */}
-        <button
-          onClick={() => navigate("/profile")}
-          style={styles.profileBadgeBtn}
-        >
-          👤 My Profile
-        </button>
+        {/* Top Right Action (Single My Profile Badge) */}
+        <div style={styles.topRightActions}>
+          <button
+            onClick={() => navigate("/profile")}
+            style={styles.actionBadgeBtn}
+          >
+            👤 My Profile
+          </button>
+        </div>
 
         <div style={styles.heroContent}>
           <h1 style={styles.heroTitle}>Rise Together. Succeed Together.</h1>
@@ -42,7 +44,7 @@ function Home() {
         </div>
       </div>
 
-      {/* 2. Standalone Search Section (ইমেজের সম্পূর্ণ নিচে) */}
+      {/* 2. Standalone Search Section */}
       <div style={styles.searchSectionWrapper}>
         <div style={styles.searchContainer}>
           <h3 style={styles.searchPromptText}>
@@ -63,7 +65,7 @@ function Home() {
         </div>
       </div>
 
-      {/* 3. Quick Navigation Hub (No duplicate search hub) */}
+      {/* 3. Quick Navigation Hub (Replaced Duplicate Profile with Register) */}
       <div style={styles.sectionContainer}>
         <div style={styles.contentWidth}>
           <div style={styles.sectionHeaderBox}>
@@ -74,16 +76,15 @@ function Home() {
           </div>
 
           <div style={styles.quickAccessGrid}>
+            {/* Replaced Profile with Register Navigation Card */}
             <div
-              onClick={() => navigate("/profile")}
+              onClick={() => navigate("/register")}
               style={styles.featurePill}
             >
-              <span style={styles.pillIcon}>👩‍💼</span>
+              <span style={styles.pillIcon}>✨</span>
               <div>
-                <h4 style={styles.pillTitle}>My Profile</h4>
-                <p style={styles.pillDesc}>
-                  Manage profile details & preferences
-                </p>
+                <h4 style={styles.pillTitle}>Register</h4>
+                <p style={styles.pillDesc}>Create a new account or sign up</p>
               </div>
             </div>
 
@@ -116,7 +117,7 @@ function Home() {
         </div>
       </div>
 
-      {/* 4. Platform Ecosystem (Team Member Modules) */}
+      {/* 4. Platform Ecosystem */}
       <div style={styles.sectionContainerAlt}>
         <div style={styles.contentWidth}>
           <div style={styles.sectionHeaderBox}>
@@ -223,11 +224,10 @@ const styles = {
     minHeight: "100vh",
     width: "100%",
   },
-  // High-height hero banner to emphasize image
   heroSection: {
     position: "relative",
     width: "100%",
-    height: "85vh", // পিকচারের ভিউ অনেক বড় করা হয়েছে
+    height: "85vh",
     backgroundImage: `url(${homeHeroImg})`,
     backgroundSize: "cover",
     backgroundPosition: "center",
@@ -241,13 +241,15 @@ const styles = {
     left: 0,
     width: "100%",
     height: "100%",
-    backgroundColor: "rgba(25, 10, 35, 0.35)", // লাইট ওভারলে যাতে পিকচার ক্লিয়ার থাকে
+    backgroundColor: "rgba(25, 10, 35, 0.35)",
   },
-  profileBadgeBtn: {
+  topRightActions: {
     position: "absolute",
     top: "25px",
     right: "30px",
     zIndex: 2,
+  },
+  actionBadgeBtn: {
     backgroundColor: "rgba(255, 255, 255, 0.3)",
     backdropFilter: "blur(8px)",
     color: "#ffffff",
@@ -280,7 +282,6 @@ const styles = {
     fontWeight: "400",
     textShadow: "0 2px 8px rgba(0,0,0,0.3)",
   },
-  // Dedicated Search Bar Box (Entirely below Hero Image)
   searchSectionWrapper: {
     backgroundColor: "#f8f5fb",
     padding: "40px 20px",
