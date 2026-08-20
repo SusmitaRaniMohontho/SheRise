@@ -19,13 +19,19 @@ function Home() {
     console.log(`${pageName} page navigation pending for team members.`);
   };
 
+  const handleLogout = () => {
+    // এখানে আপনার লগআউট লজিক (যেমন: localStorage/session Clear) বসাতে পারেন
+    console.log("User logged out");
+    navigate("/login"); // লগআউট করে সরাসরি লগইন পেজে নিয়ে যাবে
+  };
+
   return (
     <div style={styles.pageWrapper}>
       {/* 1. Large Screen Hero Section */}
       <div style={styles.heroSection}>
         <div style={styles.heroOverlay}></div>
 
-        {/* Top Right Action (Single My Profile Badge) */}
+        {/* Top Right Action Badge */}
         <div style={styles.topRightActions}>
           <button
             onClick={() => navigate("/profile")}
@@ -65,7 +71,7 @@ function Home() {
         </div>
       </div>
 
-      {/* 3. Quick Navigation Hub (Replaced Duplicate Profile with Register) */}
+      {/* 3. Quick Navigation Hub */}
       <div style={styles.sectionContainer}>
         <div style={styles.contentWidth}>
           <div style={styles.sectionHeaderBox}>
@@ -76,7 +82,6 @@ function Home() {
           </div>
 
           <div style={styles.quickAccessGrid}>
-            {/* Replaced Profile with Register Navigation Card */}
             <div
               onClick={() => navigate("/register")}
               style={styles.featurePill}
@@ -128,7 +133,6 @@ function Home() {
           </div>
 
           <div style={styles.ecosystemGrid}>
-            {/* Learning Hub */}
             <div style={styles.ecoCard}>
               <div style={styles.cardHeaderIcon}>📖</div>
               <h3 style={styles.ecoTitle}>Learning & Resources</h3>
@@ -151,7 +155,6 @@ function Home() {
               </div>
             </div>
 
-            {/* Support Network */}
             <div style={styles.ecoCard}>
               <div style={styles.cardHeaderIcon}>🤝</div>
               <h3 style={styles.ecoTitle}>Support & Assistance</h3>
@@ -174,7 +177,6 @@ function Home() {
               </div>
             </div>
 
-            {/* Career & Partners */}
             <div style={styles.ecoCard}>
               <div style={styles.cardHeaderIcon}>💼</div>
               <h3 style={styles.ecoTitle}>Careers & Partners</h3>
@@ -197,7 +199,6 @@ function Home() {
               </div>
             </div>
 
-            {/* Admin Portal */}
             <div style={styles.ecoCardSpecial}>
               <div style={styles.cardHeaderIcon}>⚙️</div>
               <h3 style={styles.ecoTitle}>System Management</h3>
@@ -211,6 +212,20 @@ function Home() {
                 Admin Dashboard
               </button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 5. Account Operations (Bottom Logout Section) */}
+      <div style={styles.logoutSectionWrapper}>
+        <div style={styles.contentWidth}>
+          <div style={styles.logoutBox}>
+            <p style={styles.logoutText}>
+              Finished exploring? You can safely log out of your session.
+            </p>
+            <button onClick={handleLogout} style={styles.logoutBtn}>
+              🚪 Log Out
+            </button>
           </div>
         </div>
       </div>
@@ -444,6 +459,40 @@ const styles = {
     color: "#ffffff",
     border: "none",
     padding: "11px",
+    borderRadius: "8px",
+    fontWeight: "700",
+    fontSize: "0.9rem",
+    cursor: "pointer",
+  },
+
+  // 5. Logout Section Styles
+  logoutSectionWrapper: {
+    backgroundColor: "#ffffff",
+    padding: "40px 20px 60px 20px",
+    borderTop: "1px solid #f0e6f7",
+  },
+  logoutBox: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#fff5f5",
+    padding: "20px 30px",
+    borderRadius: "16px",
+    border: "1px solid #ffe3e3",
+    flexWrap: "wrap",
+    gap: "15px",
+  },
+  logoutText: {
+    margin: 0,
+    color: "#c92a2a",
+    fontSize: "0.95rem",
+    fontWeight: "500",
+  },
+  logoutBtn: {
+    backgroundColor: "#e03131",
+    color: "#ffffff",
+    border: "none",
+    padding: "10px 24px",
     borderRadius: "8px",
     fontWeight: "700",
     fontSize: "0.9rem",
