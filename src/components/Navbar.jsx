@@ -11,7 +11,7 @@ export default function Navbar() {
         flexWrap: "wrap",
       }}
     >
-      <Link to="/" style={{ color: "#fff" }}>
+      <Link to="/home" style={{ color: "#fff" }}>
         Home
       </Link>
       <Link to="/login" style={{ color: "#fff" }}>

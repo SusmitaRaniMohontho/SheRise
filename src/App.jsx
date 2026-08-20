@@ -23,8 +23,9 @@ export default function App() {
       <Navbar />
       <div style={{ padding: "20px", minHeight: "80vh" }}>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/search" element={<Search />} />
