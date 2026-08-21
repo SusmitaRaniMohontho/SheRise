@@ -54,7 +54,7 @@ function Home() {
           <form onSubmit={handleSearchSubmit} style={styles.heroSearchBox}>
             <input
               type="text"
-              placeholder="Search courses, jobs, mentors, or support..."
+              placeholder="Search courses, jobs, loans, mentors, or support..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={styles.heroSearchInput}
@@ -85,6 +85,17 @@ function Home() {
               <div>
                 <h4 style={styles.pillTitle}>Register</h4>
                 <p style={styles.pillDesc}>Create a new account or sign up</p>
+              </div>
+            </div>
+
+            <div
+              onClick={() => navigate("/loan")}
+              style={styles.featurePill}
+            >
+              <span style={styles.pillIcon}>💳</span>
+              <div>
+                <h4 style={styles.pillTitle}>Loans & Grants</h4>
+                <p style={styles.pillDesc}>Apply for micro-loans & financial relief</p>
               </div>
             </div>
 
@@ -174,9 +185,9 @@ function Home() {
 
             <div style={styles.ecoCard}>
               <div style={styles.cardHeaderIcon}>💼</div>
-              <h3 style={styles.ecoTitle}>Careers & Partners</h3>
+              <h3 style={styles.ecoTitle}>Careers & Opportunities</h3>
               <p style={styles.ecoText}>
-                Explore current job openings and corporate sponsors.
+                Explore career openings and corporate sponsorship programs.
               </p>
               <div style={styles.cardBtnFlex}>
                 <button
@@ -211,7 +222,7 @@ function Home() {
         </div>
       </div>
 
-      {/* 5. Account Operations (Bottom Logout Section) */}
+      {/* 5. Account Operations */}
       <div style={styles.logoutSectionWrapper}>
         <div style={styles.contentWidth}>
           <div style={styles.logoutBox}>
@@ -362,7 +373,7 @@ const styles = {
   },
   quickAccessGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
     gap: "20px",
   },
   featurePill: {
@@ -435,17 +446,17 @@ const styles = {
   },
   cardBtnFlex: {
     display: "flex",
-    gap: "10px",
+    gap: "8px",
   },
   ecoBtn: {
     flex: 1,
     backgroundColor: "#ffffff",
     color: "#ba92d6",
     border: "1.5px solid #ba92d6",
-    padding: "10px",
+    padding: "10px 5px",
     borderRadius: "8px",
     fontWeight: "700",
-    fontSize: "0.88rem",
+    fontSize: "0.85rem",
     cursor: "pointer",
   },
   specialBtn: {
