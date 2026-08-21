@@ -198,6 +198,26 @@ function Home() {
               </div>
             </div>
 
+            {/* Loan Card Added for Team Member Integration */}
+            <div style={styles.ecoCard}>
+              <div style={styles.cardHeaderIcon}>💳</div>
+              <h3 style={styles.ecoTitle}>Loans & Financial Aid</h3>
+              <p style={styles.ecoText}>
+                Explore financial support and micro-loan opportunities.
+              </p>
+              <div style={styles.cardBtnFlex}>
+                <button onClick={() => navigate("/loan")} style={styles.ecoBtn}>
+                  Loan Page
+                </button>
+                <button
+                  onClick={() => handleFriendPageClick("Loan")}
+                  style={styles.ecoBtn}
+                >
+                  Details
+                </button>
+              </div>
+            </div>
+
             <div style={styles.ecoCardSpecial}>
               <div style={styles.cardHeaderIcon}>⚙️</div>
               <h3 style={styles.ecoTitle}>System Management</h3>

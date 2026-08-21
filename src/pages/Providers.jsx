@@ -1,236 +1,134 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function Providers() {
-  // 1. Digital Library er moto exact same React Router function home page e jawar jnne
+function Register() {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    jobCategory: "",
+  });
 
-  // 2. Search box e ja likhbo seta ai variable e thakbe
-  const [searchTerm, setSearchTerm] = useState("");
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
-  // 3. Mentor ebong Service Provider der sob details ekhane save kora ache
-  const providers = [
-    {
-      id: 1,
-      name: "Dr. Sarah Khan",
-      role: "Mental Health Counselor",
-      expertise: "Psychology, Self-care",
-      experience: "8+ Years Exp",
-      about:
-        "Providing 1-on-1 counseling and mental well-being guidance for women.",
-    },
-    {
-      id: 2,
-      name: "Jane Doe",
-      role: "Senior Software Engineer",
-      expertise: "React, Frontend, Career",
-      experience: "6+ Years Exp",
-      about:
-        "Helps young women break into tech with mentorship and code reviews.",
-    },
-    {
-      id: 3,
-      name: "Amina Rahman",
-      role: "Financial Consultant",
-      expertise: "Investment, Budgeting",
-      experience: "5+ Years Exp",
-      about:
-        "Guides individuals on managing personal finances and business loans.",
-    },
-    {
-      id: 4,
-      name: "Nusrat Jahan",
-      role: "UI/UX Design Trainer",
-      expertise: "Figma, Product Design",
-      experience: "4+ Years Exp",
-      about: "Teaches design fundamentals and portfolio building techniques.",
-    },
-  ];
-
-  // 4. Search box er nam er sathe mil asea emon mentor alada korar logic
-  const filteredProviders = providers.filter((provider) =>
-    provider.name.toLowerCase().includes(searchTerm.toLowerCase()),
-  );
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert(`Registration Successful for ${formData.jobCategory}!`);
+    navigate("/");
+  };
 
   return (
-    <div style={containerStyle}>
-      {/* 5. Digital Library er moto direct Home page e ferat jawar same button */}
-      <button style={backBtn} onClick={() => navigate("/home")}>
-        ← Back to Home
-      </button>
-
-      {/* 6. Page er main title ebong choto sub-title */}
-      <h1 style={headingStyle}>👩‍🏫 Service Providers & Mentors</h1>
-      <p style={subtitleStyle}>
-        Connect with expert mentors and professionals for guidance and support.
-      </p>
-
-      {/* 7. Mentor er name khojar search box */}
-      <div style={searchContainerStyle}>
-        <input
-          type="text"
-          placeholder="Enter mentor or provider name..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)} // Type korlei search term update hobe
-          style={searchInputStyle}
-        />
+    <div style={styles.pageWrapper}>
+      {/* Top Back to Home Button */}
+      <div style={styles.topNavContainer}>
+        <button onClick={() => navigate("/")} style={styles.backHomeBtn}>
+          ← Back to Home
+        </button>
       </div>
 
-      {/* 8. Mentor der card gulo dynamic bhabe dekhabar grid box */}
-      <div style={gridStyle}>
-        {filteredProviders.length > 0 ? (
-          // Search e name mil pele proti jon mentor er jnne 1ta kore card banabe
-          filteredProviders.map((provider) => (
-            <div key={provider.id} style={cardStyle}>
-              <div>
-                {/* Role/Post ebong Experience badge */}
-                <div style={cardHeaderStyle}>
-                  <span style={tagStyle}>{provider.role}</span>
-                  <span style={expStyle}>{provider.experience}</span>
-                </div>
+      <div style={styles.container}>
+        <h2 style={styles.title}>Apply for Opportunity</h2>
+        <p style={styles.subtitle}>Select your desired career path</p>
 
-                {/* Mentor er Name, Specialized Subject ar About details */}
-                <h3 style={titleStyle}>{provider.name}</h3>
-                <p style={expertiseStyle}>
-                  Specialized in: <strong>{provider.expertise}</strong>
-                </p>
-                <p style={descStyle}>{provider.about}</p>
-              </div>
+        <form onSubmit={handleSubmit} style={styles.form}>
+          <input
+            type="text"
+            name="name"
+            placeholder="Full Name"
+            style={styles.input}
+            onChange={handleChange}
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email Address"
+            style={styles.input}
+            onChange={handleChange}
+            required
+          />
 
-              {/* Appointment book korar button */}
-              <button style={actionBtn}>Book Appointment</button>
-            </div>
-          ))
-        ) : (
-          // Search e kno mentor er name na pele ai message dekhabe
-          <p
-            style={{
-              color: "#666666",
-              gridColumn: "1 / -1",
-              textAlign: "center",
-            }}
+          {/* জবের ক্যাটাগরি সিলেকশন */}
+          <select
+            name="jobCategory"
+            style={styles.input}
+            onChange={handleChange}
+            required
           >
-            No provider found with this name.
-          </p>
-        )}
+            <option value="">Select Job Category</option>
+            <option value="IT & Web Development">IT & Web Development</option>
+            <option value="Graphic Design">Graphic Design</option>
+            <option value="Digital Marketing">Digital Marketing</option>
+            <option value="Content Writing">Content Writing</option>
+          </select>
+
+          <button type="submit" style={styles.submitBtn}>
+            Submit Application
+          </button>
+        </form>
       </div>
     </div>
   );
 }
 
-// 🎨 9. Nicer sob gulo CSS design object (Color Code: #ba92d6)
-const containerStyle = {
-  padding: "40px 20px",
-  maxWidth: "900px",
-  margin: "0 auto",
-  textAlign: "center",
-  backgroundColor: "#ffffff",
+const styles = {
+  pageWrapper: {
+    backgroundColor: "#f8f5fb",
+    minHeight: "100vh",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "20px",
+    position: "relative",
+  },
+  topNavContainer: {
+    position: "absolute",
+    top: "25px",
+    left: "30px",
+  },
+  backHomeBtn: {
+    backgroundColor: "rgba(186, 146, 214, 0.15)",
+    color: "#ba92d6",
+    border: "1.5px solid #ba92d6",
+    padding: "8px 18px",
+    borderRadius: "20px",
+    fontWeight: "700",
+    cursor: "pointer",
+    fontSize: "0.9rem",
+  },
+  container: {
+    backgroundColor: "#ffffff",
+    padding: "40px",
+    borderRadius: "20px",
+    width: "100%",
+    maxWidth: "400px",
+    boxShadow: "0 10px 25px rgba(186, 146, 214, 0.15)",
+    textAlign: "center",
+  },
+  title: { color: "#333", fontSize: "1.6rem", marginBottom: "10px" },
+  subtitle: { color: "#888", marginBottom: "25px" },
+  form: { display: "flex", flexDirection: "column", gap: "15px" },
+  input: {
+    padding: "12px",
+    borderRadius: "10px",
+    border: "1px solid #ddd",
+    fontSize: "1rem",
+    outline: "none",
+    backgroundColor: "#fafafa",
+  },
+  submitBtn: {
+    backgroundColor: "#ba92d6",
+    color: "#fff",
+    border: "none",
+    padding: "12px",
+    borderRadius: "10px",
+    fontWeight: "700",
+    cursor: "pointer",
+    fontSize: "1rem",
+  },
 };
 
-const backBtn = {
-  background: "none",
-  border: "none",
-  color: "#ba92d6",
-  fontWeight: "bold",
-  cursor: "pointer",
-  marginBottom: "20px",
-  fontSize: "15px",
-};
-
-const headingStyle = {
-  color: "#ba92d6",
-  fontSize: "32px",
-  marginBottom: "8px",
-};
-
-const subtitleStyle = {
-  color: "#666666",
-  marginBottom: "25px",
-  fontSize: "15px",
-};
-
-const searchContainerStyle = {
-  maxWidth: "450px",
-  margin: "0 auto 35px auto",
-};
-
-const searchInputStyle = {
-  width: "100%",
-  padding: "12px 18px",
-  borderRadius: "25px",
-  border: "2px solid #ba92d6",
-  outline: "none",
-  fontSize: "14px",
-  color: "#333333",
-  boxSizing: "border-box",
-};
-
-const gridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-  gap: "24px",
-  textAlign: "left",
-};
-
-const cardStyle = {
-  backgroundColor: "#ffffff",
-  padding: "24px",
-  borderRadius: "16px",
-  border: "1px solid #ba92d6",
-  boxShadow: "0 4px 15px rgba(186, 146, 214, 0.25)",
-  display: "flex",
-  flexDirection: "column",
-  justify: "space-between",
-};
-
-const cardHeaderStyle = {
-  display: "flex",
-  justify: "space-between",
-  alignItems: "center",
-  marginBottom: "12px",
-};
-
-const tagStyle = {
-  backgroundColor: "rgba(186, 146, 214, 0.15)",
-  color: "#ba92d6",
-  padding: "4px 12px",
-  borderRadius: "8px",
-  fontSize: "12px",
-  fontWeight: "bold",
-};
-
-const expStyle = {
-  fontSize: "12px",
-  color: "#666666",
-};
-
-const titleStyle = {
-  margin: "0 0 6px 0",
-  color: "#333333",
-  fontSize: "18px",
-};
-
-const expertiseStyle = {
-  fontSize: "13px",
-  color: "#666666",
-  marginBottom: "10px",
-};
-
-const descStyle = {
-  fontSize: "14px",
-  color: "#666666",
-  lineHeight: "1.4",
-  marginBottom: "20px",
-};
-
-const actionBtn = {
-  width: "100%",
-  padding: "10px",
-  backgroundColor: "#ba92d6",
-  color: "#ffffff",
-  border: "none",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontWeight: "bold",
-  fontSize: "14px",
-};
+export default Register;

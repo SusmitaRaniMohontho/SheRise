@@ -6,7 +6,7 @@ function Register() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    jobCategory: "", // এখানে ইউজার তার পছন্দের জবের ক্যাটাগরি সিলেক্ট করবে
+    jobCategory: "",
   });
 
   const handleChange = (e) => {
@@ -16,7 +16,7 @@ function Register() {
   const handleSubmit = (e) => {
     e.preventDefault();
     alert(`Registration Successful for ${formData.jobCategory}!`);
-    navigate("/home");
+    navigate("/");
   };
 
   return (
@@ -61,6 +61,11 @@ function Register() {
             Submit Application
           </button>
         </form>
+
+        {/* Back to Home Button */}
+        <button onClick={() => navigate("/home")} style={styles.backHomeBtn}>
+          ← Back to Home
+        </button>
       </div>
     </div>
   );
@@ -73,6 +78,7 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    padding: "20px",
   },
   container: {
     backgroundColor: "#ffffff",
@@ -103,6 +109,18 @@ const styles = {
     fontWeight: "700",
     cursor: "pointer",
     fontSize: "1rem",
+  },
+  backHomeBtn: {
+    marginTop: "15px",
+    backgroundColor: "transparent",
+    color: "#ba92d6",
+    border: "1.5px solid #ba92d6",
+    padding: "10px",
+    borderRadius: "10px",
+    fontWeight: "700",
+    cursor: "pointer",
+    fontSize: "0.95rem",
+    width: "100%",
   },
 };
 
