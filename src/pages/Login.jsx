@@ -105,17 +105,17 @@ const styles = {
   },
   cardContainer: {
     display: "flex",
+    flexWrap: "wrap", // মোবাইলে জায়গা না পেলে নিচে নামিয়ে দেবে
     width: "100%",
     maxWidth: "900px",
     backgroundColor: "#ffffff",
     borderRadius: "16px",
     boxShadow: "0 10px 30px rgba(186, 146, 214, 0.25)",
     overflow: "hidden",
-    minHeight: "500px",
     border: "1px solid #f3eafd",
   },
   leftSection: {
-    flex: 1,
+    flex: "1 1 300px", // রেসপন্সিভ করার জন্য ফ্লেক্স সাইজ ঠিক করা হয়েছে
     backgroundColor: "#ba92d6",
     display: "flex",
     alignItems: "center",
@@ -140,7 +140,7 @@ const styles = {
     opacity: 0.95,
   },
   rightSection: {
-    flex: 1,
+    flex: "1 1 300px", // মোবাইলে পাশাপাশি জায়গা না পেলে নিচে চলে আসবে
     padding: "40px",
     display: "flex",
     alignItems: "center",
