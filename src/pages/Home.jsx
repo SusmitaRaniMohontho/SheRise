@@ -99,17 +99,6 @@ function Home() {
             </div>
 
             <div
-              onClick={() => navigate("/loan")}
-              style={styles.featurePill}
-            >
-              <span style={styles.pillIcon}>💳</span>
-              <div>
-                <h4 style={styles.pillTitle}>Loans & Grants</h4>
-                <p style={styles.pillDesc}>Apply for micro-loans & financial relief</p>
-              </div>
-            </div>
-
-            <div
               onClick={() => navigate("/library")}
               style={styles.featurePill}
             >
