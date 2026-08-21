@@ -120,9 +120,9 @@ function Home() {
             >
               <span style={styles.pillIcon}>💳</span>
               <div>
-                <h4 style={styles.pillTitle}>Financial Loans</h4>
+                <h4 style={styles.pillTitle}>Financial Aid</h4>
                 <p style={styles.pillDesc}>
-                  Apply for micro-loans and emergency aid
+                  Apply for micro-loans and assistance
                 </p>
               </div>
             </div>
@@ -136,7 +136,7 @@ function Home() {
           <div style={styles.sectionHeaderBox}>
             <h2 style={styles.sectionTitle}>Explore SheRise Ecosystem</h2>
             <p style={styles.sectionDesc}>
-              Everything you need for skill development, network and support.
+              Everything you need for skill development, network, and support.
             </p>
           </div>
 
@@ -203,22 +203,6 @@ function Home() {
                   style={styles.ecoBtn}
                 >
                   Sponsors
-                </button>
-              </div>
-            </div>
-
-            <div style={styles.ecoCard}>
-              <div style={styles.cardHeaderIcon}>💰</div>
-              <h3 style={styles.ecoTitle}>Financial & Aid</h3>
-              <p style={styles.ecoText}>
-                Access micro-loans, financial assistance, and emergency aid.
-              </p>
-              <div style={styles.cardBtnFlex}>
-                <button
-                  onClick={() => navigate("/loan")}
-                  style={styles.ecoBtnFull}
-                >
-                  Apply for Loans
                 </button>
               </div>
             </div>
@@ -468,17 +452,6 @@ const styles = {
   },
   ecoBtn: {
     flex: 1,
-    backgroundColor: "#ffffff",
-    color: "#ba92d6",
-    border: "1.5px solid #ba92d6",
-    padding: "10px",
-    borderRadius: "8px",
-    fontWeight: "700",
-    fontSize: "0.88rem",
-    cursor: "pointer",
-  },
-  ecoBtnFull: {
-    width: "100%",
     backgroundColor: "#ffffff",
     color: "#ba92d6",
     border: "1.5px solid #ba92d6",
