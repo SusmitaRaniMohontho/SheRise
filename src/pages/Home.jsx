@@ -22,11 +22,10 @@ function Home() {
 
   return (
     <div style={styles.pageWrapper}>
-      {/* 1. Large Screen Hero Section */}
+      {/* 1. Hero Section */}
       <div style={styles.heroSection}>
         <div style={styles.heroOverlay}></div>
 
-        {/* Top Right Action Badge */}
         <div style={styles.topRightActions}>
           <button
             onClick={() => navigate("/profile")}
@@ -39,13 +38,12 @@ function Home() {
         <div style={styles.heroContent}>
           <h1 style={styles.heroTitle}>Rise Together. Succeed Together.</h1>
           <p style={styles.heroSubtitle}>
-            Empowering women through education, community support, and career
-            growth.
+            Empowering women through education, community support, and career growth.
           </p>
         </div>
       </div>
 
-      {/* 2. Standalone Search Section */}
+      {/* 2. Search Section */}
       <div style={styles.searchSectionWrapper}>
         <div style={styles.searchContainer}>
           <h3 style={styles.searchPromptText}>
@@ -66,7 +64,7 @@ function Home() {
         </div>
       </div>
 
-      {/* 3. Quick Navigation Hub */}
+      {/* 3. Quick Navigation Hub (Financial Aid removed) */}
       <div style={styles.sectionContainer}>
         <div style={styles.contentWidth}>
           <div style={styles.sectionHeaderBox}>
@@ -95,9 +93,7 @@ function Home() {
               <span style={styles.pillIcon}>📚</span>
               <div>
                 <h4 style={styles.pillTitle}>Digital Assets</h4>
-                <p style={styles.pillDesc}>
-                  Access learning guides & resource library
-                </p>
+                <p style={styles.pillDesc}>Access learning guides & resource library</p>
               </div>
             </div>
 
@@ -108,22 +104,7 @@ function Home() {
               <span style={styles.pillIcon}>💬</span>
               <div>
                 <h4 style={styles.pillTitle}>Help Center</h4>
-                <p style={styles.pillDesc}>
-                  Get community support & emergency guidance
-                </p>
-              </div>
-            </div>
-
-            <div
-              onClick={() => navigate("/loan")}
-              style={styles.featurePill}
-            >
-              <span style={styles.pillIcon}>💳</span>
-              <div>
-                <h4 style={styles.pillTitle}>Financial Aid</h4>
-                <p style={styles.pillDesc}>
-                  Apply for micro-loans and assistance
-                </p>
+                <p style={styles.pillDesc}>Get community support & guidance</p>
               </div>
             </div>
           </div>
@@ -207,6 +188,20 @@ function Home() {
               </div>
             </div>
 
+            <div style={styles.ecoCard}>
+              <div style={styles.cardHeaderIcon}>💳</div>
+              <h3 style={styles.ecoTitle}>Financial Aid</h3>
+              <p style={styles.ecoText}>
+                Apply for micro-loans, grant opportunities, and financial aid options.
+              </p>
+              <button
+                onClick={() => navigate("/loan")}
+                style={styles.specialBtn}
+              >
+                Apply for Loan
+              </button>
+            </div>
+
             <div style={styles.ecoCardSpecial}>
               <div style={styles.cardHeaderIcon}>⚙️</div>
               <h3 style={styles.ecoTitle}>System Management</h3>
@@ -224,7 +219,7 @@ function Home() {
         </div>
       </div>
 
-      {/* 5. Account Operations (Bottom Logout Section) */}
+      {/* 5. Account Operations */}
       <div style={styles.logoutSectionWrapper}>
         <div style={styles.contentWidth}>
           <div style={styles.logoutBox}>
