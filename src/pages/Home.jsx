@@ -128,7 +128,7 @@ function Home() {
           <div style={styles.sectionHeaderBox}>
             <h2 style={styles.sectionTitle}>Explore SheRise Ecosystem</h2>
             <p style={styles.sectionDesc}>
-              Everything you need for skill development, network, and support.
+              Everything you need for skill development, network and support.
             </p>
           </div>
 
