@@ -5,7 +5,7 @@ export default function Navbar() {
     <nav
       style={{
         padding: "15px",
-        background: "#2c3e50",
+        background: "#ba92d6", // Dark background bodle light purple theme kora hoyeche
         display: "flex",
         gap: "15px",
         flexWrap: "wrap",
