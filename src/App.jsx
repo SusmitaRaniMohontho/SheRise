@@ -22,24 +22,37 @@ export default function App() {
   return (
     <Router>
       <Navbar />
-      <div style={{ padding: "20px", minHeight: "80vh" }}>
+      <main style={{ width: "100%", minHeight: "80vh", position: "relative" }}>
         <Routes>
+          {/* Landing/First Page is Login */}
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
+
+          {/* Main Home Dashboard */}
           <Route path="/home" element={<Home />} />
+
+          {/* Authentication & Profile */}
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
+
+          {/* Search & Content */}
           <Route path="/search" element={<Search />} />
           <Route path="/content" element={<Content />} />
           <Route path="/library" element={<DigitalLibrary />} />
+
+          {/* Support & Assistance */}
           <Route path="/providers" element={<Providers />} />
           <Route path="/help" element={<Help />} />
+
+          {/* Careers & Finance */}
           <Route path="/jobs" element={<Jobs />} />
           <Route path="/sponsors" element={<Sponsors />} />
           <Route path="/loan" element={<Loan />} />
+
+          {/* Admin Management */}
           <Route path="/admin" element={<AdminDashboard />} />
         </Routes>
-      </div>
+      </main>
       <Footer />
     </Router>
   );

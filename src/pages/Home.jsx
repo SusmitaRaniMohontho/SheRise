@@ -15,10 +15,6 @@ function Home() {
     }
   };
 
-  const handleFriendPageClick = (pageName) => {
-    console.log(`${pageName} page navigation pending for team members.`);
-  };
-
   const handleLogout = () => {
     console.log("User logged out");
     navigate("/login");
@@ -43,7 +39,7 @@ function Home() {
         <div style={styles.heroContent}>
           <h1 style={styles.heroTitle}>Rise Together. Succeed Together.</h1>
           <p style={styles.heroSubtitle}>
-            Empowering women through education, community support and career
+            Empowering women through education, community support, and career
             growth.
           </p>
         </div>
@@ -93,7 +89,7 @@ function Home() {
             </div>
 
             <div
-              onClick={() => handleFriendPageClick("DigitalLibrary")}
+              onClick={() => navigate("/library")}
               style={styles.featurePill}
             >
               <span style={styles.pillIcon}>📚</span>
@@ -106,7 +102,7 @@ function Home() {
             </div>
 
             <div
-              onClick={() => handleFriendPageClick("Help")}
+              onClick={() => navigate("/help")}
               style={styles.featurePill}
             >
               <span style={styles.pillIcon}>💬</span>
@@ -140,13 +136,13 @@ function Home() {
               </p>
               <div style={styles.cardBtnFlex}>
                 <button
-                  onClick={() => handleFriendPageClick("Content")}
+                  onClick={() => navigate("/content")}
                   style={styles.ecoBtn}
                 >
                   Content
                 </button>
                 <button
-                  onClick={() => handleFriendPageClick("DigitalLibrary")}
+                  onClick={() => navigate("/library")}
                   style={styles.ecoBtn}
                 >
                   Library
@@ -162,13 +158,13 @@ function Home() {
               </p>
               <div style={styles.cardBtnFlex}>
                 <button
-                  onClick={() => handleFriendPageClick("Providers")}
+                  onClick={() => navigate("/providers")}
                   style={styles.ecoBtn}
                 >
                   Providers
                 </button>
                 <button
-                  onClick={() => handleFriendPageClick("Help")}
+                  onClick={() => navigate("/help")}
                   style={styles.ecoBtn}
                 >
                   Help Center
@@ -184,33 +180,18 @@ function Home() {
               </p>
               <div style={styles.cardBtnFlex}>
                 <button
-                  onClick={() => handleFriendPageClick("Jobs")}
+                  onClick={() => navigate("/jobs")}
                   style={styles.ecoBtn}
                 >
                   Jobs
                 </button>
                 <button
-                  onClick={() => handleFriendPageClick("Sponsors")}
+                  onClick={() => navigate("/sponsors")}
                   style={styles.ecoBtn}
                 >
                   Sponsors
                 </button>
               </div>
-            </div>
-
-            {/* Loan Card */}
-            <div style={styles.ecoCard}>
-              <div style={styles.cardHeaderIcon}>💳</div>
-              <h3 style={styles.ecoTitle}>Loans & Financial Aid</h3>
-              <p style={styles.ecoText}>
-                Explore financial support and micro-loan opportunities.
-              </p>
-              <button
-                onClick={() => navigate("/loan")}
-                style={styles.specialBtn}
-              >
-                Loan Page
-              </button>
             </div>
 
             <div style={styles.ecoCardSpecial}>
@@ -220,7 +201,7 @@ function Home() {
                 Administrative overview and system management panel.
               </p>
               <button
-                onClick={() => handleFriendPageClick("AdminDashboard")}
+                onClick={() => navigate("/admin")}
                 style={styles.specialBtn}
               >
                 Admin Dashboard
