@@ -15,6 +15,10 @@ function Home() {
     }
   };
 
+  const handleFriendPageClick = (pageName) => {
+    console.log(`${pageName} page navigation pending for team members.`);
+  };
+
   const handleLogout = () => {
     console.log("User logged out");
     navigate("/login");
@@ -22,10 +26,11 @@ function Home() {
 
   return (
     <div style={styles.pageWrapper}>
-      {/* 1. Hero Section */}
+      {/* 1. Large Screen Hero Section */}
       <div style={styles.heroSection}>
         <div style={styles.heroOverlay}></div>
 
+        {/* Top Right Action Badge */}
         <div style={styles.topRightActions}>
           <button
             onClick={() => navigate("/profile")}
@@ -88,7 +93,7 @@ function Home() {
             </div>
 
             <div
-              onClick={() => navigate("/library")}
+              onClick={() => handleFriendPageClick("DigitalLibrary")}
               style={styles.featurePill}
             >
               <span style={styles.pillIcon}>📚</span>
@@ -101,7 +106,7 @@ function Home() {
             </div>
 
             <div
-              onClick={() => navigate("/help")}
+              onClick={() => handleFriendPageClick("Help")}
               style={styles.featurePill}
             >
               <span style={styles.pillIcon}>💬</span>
@@ -135,13 +140,13 @@ function Home() {
               </p>
               <div style={styles.cardBtnFlex}>
                 <button
-                  onClick={() => navigate("/content")}
+                  onClick={() => handleFriendPageClick("Content")}
                   style={styles.ecoBtn}
                 >
                   Content
                 </button>
                 <button
-                  onClick={() => navigate("/library")}
+                  onClick={() => handleFriendPageClick("DigitalLibrary")}
                   style={styles.ecoBtn}
                 >
                   Library
@@ -157,13 +162,13 @@ function Home() {
               </p>
               <div style={styles.cardBtnFlex}>
                 <button
-                  onClick={() => navigate("/providers")}
+                  onClick={() => handleFriendPageClick("Providers")}
                   style={styles.ecoBtn}
                 >
                   Providers
                 </button>
                 <button
-                  onClick={() => navigate("/help")}
+                  onClick={() => handleFriendPageClick("Help")}
                   style={styles.ecoBtn}
                 >
                   Help Center
@@ -179,13 +184,13 @@ function Home() {
               </p>
               <div style={styles.cardBtnFlex}>
                 <button
-                  onClick={() => navigate("/jobs")}
+                  onClick={() => handleFriendPageClick("Jobs")}
                   style={styles.ecoBtn}
                 >
                   Jobs
                 </button>
                 <button
-                  onClick={() => navigate("/sponsors")}
+                  onClick={() => handleFriendPageClick("Sponsors")}
                   style={styles.ecoBtn}
                 >
                   Sponsors
@@ -193,6 +198,7 @@ function Home() {
               </div>
             </div>
 
+            {/* Loan Card */}
             <div style={styles.ecoCard}>
               <div style={styles.cardHeaderIcon}>💳</div>
               <h3 style={styles.ecoTitle}>Loans & Financial Aid</h3>
@@ -214,7 +220,7 @@ function Home() {
                 Administrative overview and system management panel.
               </p>
               <button
-                onClick={() => navigate("/admin")}
+                onClick={() => handleFriendPageClick("AdminDashboard")}
                 style={styles.specialBtn}
               >
                 Admin Dashboard
@@ -224,7 +230,7 @@ function Home() {
         </div>
       </div>
 
-      {/* 5. Account Operations */}
+      {/* 5. Account Operations (Bottom Logout Section) */}
       <div style={styles.logoutSectionWrapper}>
         <div style={styles.contentWidth}>
           <div style={styles.logoutBox}>
