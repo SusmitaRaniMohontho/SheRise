@@ -15,6 +15,10 @@ function Home() {
     }
   };
 
+  const handleFriendPageClick = (pageName) => {
+    console.log(`${pageName} page navigation pending for team members.`);
+  };
+
   const handleLogout = () => {
     console.log("User logged out");
     navigate("/login");
@@ -22,10 +26,11 @@ function Home() {
 
   return (
     <div style={styles.pageWrapper}>
-      {/* 1. Hero Section */}
+      {/* 1. Large Screen Hero Section */}
       <div style={styles.heroSection}>
         <div style={styles.heroOverlay}></div>
 
+        {/* Top Right Action Badge */}
         <div style={styles.topRightActions}>
           <button
             onClick={() => navigate("/profile")}
@@ -38,12 +43,13 @@ function Home() {
         <div style={styles.heroContent}>
           <h1 style={styles.heroTitle}>Rise Together. Succeed Together.</h1>
           <p style={styles.heroSubtitle}>
-            Empowering women through education, community support, and career growth.
+            Empowering women through education, community support and career
+            growth.
           </p>
         </div>
       </div>
 
-      {/* 2. Search Section */}
+      {/* 2. Standalone Search Section */}
       <div style={styles.searchSectionWrapper}>
         <div style={styles.searchContainer}>
           <h3 style={styles.searchPromptText}>
@@ -64,7 +70,7 @@ function Home() {
         </div>
       </div>
 
-      {/* 3. Quick Navigation Hub (Financial Aid removed) */}
+      {/* 3. Quick Navigation Hub */}
       <div style={styles.sectionContainer}>
         <div style={styles.contentWidth}>
           <div style={styles.sectionHeaderBox}>
@@ -87,24 +93,28 @@ function Home() {
             </div>
 
             <div
-              onClick={() => navigate("/library")}
+              onClick={() => handleFriendPageClick("DigitalLibrary")}
               style={styles.featurePill}
             >
               <span style={styles.pillIcon}>📚</span>
               <div>
                 <h4 style={styles.pillTitle}>Digital Assets</h4>
-                <p style={styles.pillDesc}>Access learning guides & resource library</p>
+                <p style={styles.pillDesc}>
+                  Access learning guides & resource library
+                </p>
               </div>
             </div>
 
             <div
-              onClick={() => navigate("/help")}
+              onClick={() => handleFriendPageClick("Help")}
               style={styles.featurePill}
             >
               <span style={styles.pillIcon}>💬</span>
               <div>
                 <h4 style={styles.pillTitle}>Help Center</h4>
-                <p style={styles.pillDesc}>Get community support & guidance</p>
+                <p style={styles.pillDesc}>
+                  Get community support & emergency guidance
+                </p>
               </div>
             </div>
           </div>
@@ -130,13 +140,13 @@ function Home() {
               </p>
               <div style={styles.cardBtnFlex}>
                 <button
-                  onClick={() => navigate("/content")}
+                  onClick={() => handleFriendPageClick("Content")}
                   style={styles.ecoBtn}
                 >
                   Content
                 </button>
                 <button
-                  onClick={() => navigate("/library")}
+                  onClick={() => handleFriendPageClick("DigitalLibrary")}
                   style={styles.ecoBtn}
                 >
                   Library
@@ -152,13 +162,13 @@ function Home() {
               </p>
               <div style={styles.cardBtnFlex}>
                 <button
-                  onClick={() => navigate("/providers")}
+                  onClick={() => handleFriendPageClick("Providers")}
                   style={styles.ecoBtn}
                 >
                   Providers
                 </button>
                 <button
-                  onClick={() => navigate("/help")}
+                  onClick={() => handleFriendPageClick("Help")}
                   style={styles.ecoBtn}
                 >
                   Help Center
@@ -174,32 +184,18 @@ function Home() {
               </p>
               <div style={styles.cardBtnFlex}>
                 <button
-                  onClick={() => navigate("/jobs")}
+                  onClick={() => handleFriendPageClick("Jobs")}
                   style={styles.ecoBtn}
                 >
                   Jobs
                 </button>
                 <button
-                  onClick={() => navigate("/sponsors")}
+                  onClick={() => handleFriendPageClick("Sponsors")}
                   style={styles.ecoBtn}
                 >
                   Sponsors
                 </button>
               </div>
-            </div>
-
-            <div style={styles.ecoCard}>
-              <div style={styles.cardHeaderIcon}>💳</div>
-              <h3 style={styles.ecoTitle}>Financial Aid</h3>
-              <p style={styles.ecoText}>
-                Apply for micro-loans, grant opportunities, and financial aid options.
-              </p>
-              <button
-                onClick={() => navigate("/loan")}
-                style={styles.specialBtn}
-              >
-                Apply for Loan
-              </button>
             </div>
 
             <div style={styles.ecoCardSpecial}>
@@ -209,7 +205,7 @@ function Home() {
                 Administrative overview and system management panel.
               </p>
               <button
-                onClick={() => navigate("/admin")}
+                onClick={() => handleFriendPageClick("AdminDashboard")}
                 style={styles.specialBtn}
               >
                 Admin Dashboard
@@ -219,7 +215,7 @@ function Home() {
         </div>
       </div>
 
-      {/* 5. Account Operations */}
+      {/* 5. Account Operations (Bottom Logout Section) */}
       <div style={styles.logoutSectionWrapper}>
         <div style={styles.contentWidth}>
           <div style={styles.logoutBox}>
@@ -370,7 +366,7 @@ const styles = {
   },
   quickAccessGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
     gap: "20px",
   },
   featurePill: {
