@@ -15,14 +15,9 @@ function Home() {
     }
   };
 
-  const handleFriendPageClick = (pageName) => {
-    console.log(`${pageName} page navigation pending for team members.`);
-  };
-
   const handleLogout = () => {
-    // এখানে আপনার লগআউট লজিক (যেমন: localStorage/session Clear) বসাতে পারেন
     console.log("User logged out");
-    navigate("/login"); // লগআউট করে সরাসরি লগইন পেজে নিয়ে যাবে
+    navigate("/login");
   };
 
   return (
@@ -94,7 +89,7 @@ function Home() {
             </div>
 
             <div
-              onClick={() => handleFriendPageClick("DigitalLibrary")}
+              onClick={() => navigate("/library")}
               style={styles.featurePill}
             >
               <span style={styles.pillIcon}>📚</span>
@@ -107,7 +102,7 @@ function Home() {
             </div>
 
             <div
-              onClick={() => handleFriendPageClick("Help")}
+              onClick={() => navigate("/help")}
               style={styles.featurePill}
             >
               <span style={styles.pillIcon}>💬</span>
@@ -115,6 +110,19 @@ function Home() {
                 <h4 style={styles.pillTitle}>Help Center</h4>
                 <p style={styles.pillDesc}>
                   Get community support & emergency guidance
+                </p>
+              </div>
+            </div>
+
+            <div
+              onClick={() => navigate("/loan")}
+              style={styles.featurePill}
+            >
+              <span style={styles.pillIcon}>💳</span>
+              <div>
+                <h4 style={styles.pillTitle}>Financial Loans</h4>
+                <p style={styles.pillDesc}>
+                  Apply for micro-loans and emergency aid
                 </p>
               </div>
             </div>
@@ -141,13 +149,13 @@ function Home() {
               </p>
               <div style={styles.cardBtnFlex}>
                 <button
-                  onClick={() => handleFriendPageClick("Content")}
+                  onClick={() => navigate("/content")}
                   style={styles.ecoBtn}
                 >
                   Content
                 </button>
                 <button
-                  onClick={() => handleFriendPageClick("DigitalLibrary")}
+                  onClick={() => navigate("/library")}
                   style={styles.ecoBtn}
                 >
                   Library
@@ -163,13 +171,13 @@ function Home() {
               </p>
               <div style={styles.cardBtnFlex}>
                 <button
-                  onClick={() => handleFriendPageClick("Providers")}
+                  onClick={() => navigate("/providers")}
                   style={styles.ecoBtn}
                 >
                   Providers
                 </button>
                 <button
-                  onClick={() => handleFriendPageClick("Help")}
+                  onClick={() => navigate("/help")}
                   style={styles.ecoBtn}
                 >
                   Help Center
@@ -185,16 +193,32 @@ function Home() {
               </p>
               <div style={styles.cardBtnFlex}>
                 <button
-                  onClick={() => handleFriendPageClick("Jobs")}
+                  onClick={() => navigate("/jobs")}
                   style={styles.ecoBtn}
                 >
                   Jobs
                 </button>
                 <button
-                  onClick={() => handleFriendPageClick("Sponsors")}
+                  onClick={() => navigate("/sponsors")}
                   style={styles.ecoBtn}
                 >
                   Sponsors
+                </button>
+              </div>
+            </div>
+
+            <div style={styles.ecoCard}>
+              <div style={styles.cardHeaderIcon}>💰</div>
+              <h3 style={styles.ecoTitle}>Financial & Aid</h3>
+              <p style={styles.ecoText}>
+                Access micro-loans, financial assistance, and emergency aid.
+              </p>
+              <div style={styles.cardBtnFlex}>
+                <button
+                  onClick={() => navigate("/loan")}
+                  style={styles.ecoBtnFull}
+                >
+                  Apply for Loans
                 </button>
               </div>
             </div>
@@ -206,7 +230,7 @@ function Home() {
                 Administrative overview and system management panel.
               </p>
               <button
-                onClick={() => handleFriendPageClick("AdminDashboard")}
+                onClick={() => navigate("/admin")}
                 style={styles.specialBtn}
               >
                 Admin Dashboard
@@ -367,7 +391,7 @@ const styles = {
   },
   quickAccessGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+    gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
     gap: "20px",
   },
   featurePill: {
@@ -453,6 +477,17 @@ const styles = {
     fontSize: "0.88rem",
     cursor: "pointer",
   },
+  ecoBtnFull: {
+    width: "100%",
+    backgroundColor: "#ffffff",
+    color: "#ba92d6",
+    border: "1.5px solid #ba92d6",
+    padding: "10px",
+    borderRadius: "8px",
+    fontWeight: "700",
+    fontSize: "0.88rem",
+    cursor: "pointer",
+  },
   specialBtn: {
     width: "100%",
     backgroundColor: "#ba92d6",
@@ -464,8 +499,6 @@ const styles = {
     fontSize: "0.9rem",
     cursor: "pointer",
   },
-
-  // 5. Logout Section Styles
   logoutSectionWrapper: {
     backgroundColor: "#ffffff",
     padding: "40px 20px 60px 20px",
