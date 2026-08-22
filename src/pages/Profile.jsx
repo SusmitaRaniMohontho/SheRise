@@ -9,7 +9,7 @@ function Profile() {
     email: "",
     role: "",
     bio: "",
-    // আপনার পছন্দমতো ক্লাসিক এবং মিনিমাল জেনেরিক ফিমেল সিলুয়েট অবতারের লিঙ্ক
+    //avatar link
     avatar: "https://cdn-icons-png.flaticon.com/512/727/727399.png",
     enrolledCourses: 0,
     savedJobs: 0,

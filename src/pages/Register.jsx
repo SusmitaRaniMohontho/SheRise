@@ -43,7 +43,7 @@ function Register() {
             required
           />
 
-          {/* জবের ক্যাটাগরি সিলেকশন */}
+          {/* job er catagory selection */}
           <select
             name="jobCategory"
             style={styles.input}

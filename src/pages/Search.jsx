@@ -4,9 +4,9 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 function Search() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const query = searchParams.get("q") || ""; // URL থেকে সার্চ করা কিউয়ারিটি ধরে আনবে
+  const query = searchParams.get("q") || ""; // URL theke search korar query dhore anbe
 
-  // প্রোটোটাইপিং বা প্রেজেন্টেশনের জন্য মক ডেটা (Mock Data)
+  // presenstation er jonno (Mock Data)
   const mockResults = [
     {
       id: 1,
@@ -49,7 +49,7 @@ function Search() {
     },
   ];
 
-  // কিউয়ারি (Query) অনুযায়ী ডেটা ফিল্টার করা
+  //  (Query) wise data filter
   const filteredResults = mockResults.filter(
     (item) =>
       item.title.toLowerCase().includes(query.toLowerCase()) ||
@@ -59,7 +59,7 @@ function Search() {
 
   return (
     <div style={styles.pageWrapper}>
-      {/* Top Bar / Back to Home (এখানে navigate('/') দেওয়া আছে, ফলে হোমে যাবে) */}
+      {/* Top Bar / Back to Home*/}
       <div style={styles.topBar}>
         <button onClick={() => navigate("/home")} style={styles.backBtn}>
           ← Back to Home
