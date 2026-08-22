@@ -16,7 +16,7 @@ function Register() {
   const handleSubmit = (e) => {
     e.preventDefault();
     alert(`Registration Successful for ${formData.jobCategory}!`);
-    navigate("/");
+    navigate("/home");
   };
 
   return (
