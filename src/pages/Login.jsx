@@ -105,7 +105,7 @@ const styles = {
   },
   cardContainer: {
     display: "flex",
-    flexWrap: "wrap", // মোবাইলে জায়গা না পেলে নিচে নামিয়ে দেবে
+    flexWrap: "wrap", // mobile jaiga na pele nice namiye dbe
     width: "100%",
     maxWidth: "900px",
     backgroundColor: "#ffffff",
@@ -115,7 +115,7 @@ const styles = {
     border: "1px solid #f3eafd",
   },
   leftSection: {
-    flex: "1 1 300px", // রেসপন্সিভ করার জন্য ফ্লেক্স সাইজ ঠিক করা হয়েছে
+    flex: "1 1 300px", // responsive korar flex size
     backgroundColor: "#ba92d6",
     display: "flex",
     alignItems: "center",
@@ -140,7 +140,7 @@ const styles = {
     opacity: 0.95,
   },
   rightSection: {
-    flex: "1 1 300px", // মোবাইলে পাশাপাশি জায়গা না পেলে নিচে চলে আসবে
+    flex: "1 1 300px", // mobile er pashe jaiga na pele nice cole asbe
     padding: "40px",
     display: "flex",
     alignItems: "center",
