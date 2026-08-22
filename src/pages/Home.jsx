@@ -285,6 +285,7 @@ const styles = {
     marginBottom: "15px",
     lineHeight: "1.2",
     textShadow: "0 2px 10px rgba(0,0,0,0.3)",
+    color: "#ffffff",
   },
   heroSubtitle: {
     fontSize: "1.25rem",
