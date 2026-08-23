@@ -35,7 +35,7 @@ export default function Loan() {
           ← Back
         </button>
 
-        <h2 style={styles.title}>💳 Financial Loans</h2>
+        <h2 style={styles.title}> Financial Loans</h2>
 
         <form onSubmit={handleSubmit} style={styles.formCard}>
           <div style={styles.inputGroup}>

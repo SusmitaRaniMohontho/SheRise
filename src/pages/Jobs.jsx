@@ -44,7 +44,7 @@ export default function Jobs() {
           ← Back
         </button>
 
-        <h2 style={styles.title}>💼 Job Hunt</h2>
+        <h2 style={styles.title}> Job Hunt</h2>
 
         {/* JOB POSTS SECTION */}
         <div style={styles.jobList}>
@@ -84,7 +84,7 @@ export default function Jobs() {
 
         {/* DROP CV SECTION */}
         <div style={styles.dropCvSection}>
-          <h3 style={styles.dropCvTitle}>📄 Drop CV</h3>
+          <h3 style={styles.dropCvTitle}> Drop CV</h3>
           <form onSubmit={handleCvSubmit} style={styles.formCard}>
             <label htmlFor="qualifications" style={styles.label}>
               Tell us your qualifications and skills

@@ -10,21 +10,24 @@ export default function Sponsors() {
       id: "s1",
       name: "TechForHer Foundation",
       tier: "Platinum Partner",
-      details: "Provides tech scholarships, mentorship, and equipment grants for emerging female talent.",
+      details:
+        "Provides tech scholarships, mentorship, and equipment grants for emerging female talent.",
       email: "partnerships@techforher.org",
     },
     {
       id: "s2",
       name: "Global Women Initiative",
       tier: "Gold Sponsor",
-      details: "Funds career development workshops, networking summits, and local community grants.",
+      details:
+        "Funds career development workshops, networking summits, and local community grants.",
       email: "contact@globalwomen.org",
     },
     {
       id: "s3",
       name: "Future Elevate Fund",
       tier: "Silver Sponsor",
-      details: "Supports startup funding programs and leadership coaching for early-stage professionals.",
+      details:
+        "Supports startup funding programs and leadership coaching for early-stage professionals.",
       email: "sponsorships@futureelevate.com",
     },
   ];
@@ -33,13 +36,14 @@ export default function Sponsors() {
     {
       id: "e1",
       Name: "Zara Khan",
-      details: "Helps women with craftmanship such as sewing, design, block print etc.",
+      details:
+        "Helps women with craftmanship such as sewing, design, block print etc.",
       email: "zara@helpher.com",
     },
     {
       id: "e2",
       Name: "Tashdeed Aryan",
-     
+
       details: "Helps women with talents like singing, drawing, teaching etc .",
       email: "hr@auracreative.io",
     },
@@ -47,7 +51,8 @@ export default function Sponsors() {
       id: "e3",
       company: "NextGen Health",
       industry: "Healthcare Tech",
-      details: "Healthtech startup creating inclusive medical software and hiring data analysts.",
+      details:
+        "Healthtech startup creating inclusive medical software and hiring data analysts.",
       email: "talent@nextgenhealth.com",
     },
   ];
@@ -59,7 +64,7 @@ export default function Sponsors() {
           ← Back
         </button>
 
-        <h2 style={styles.title}>🤝 Sponsors and Employers</h2>
+        <h2 style={styles.title}> Sponsors and Employers</h2>
 
         {/* Tab Buttons */}
         <div style={styles.buttonGroup}>
@@ -71,7 +76,7 @@ export default function Sponsors() {
                 : styles.tabBtnOutline
             }
           >
-            🌟 Sponsors
+            Sponsors
           </button>
           <button
             onClick={() => setActiveTab("employers")}
@@ -81,7 +86,7 @@ export default function Sponsors() {
                 : styles.tabBtnOutline
             }
           >
-            🏢 Employers
+            Employers
           </button>
         </div>
 
@@ -98,7 +103,7 @@ export default function Sponsors() {
                   </div>
                   <p style={styles.cardDesc}>{item.details}</p>
                   <div style={styles.emailWrapper}>
-                    <span style={styles.emailLabel}>📧 Contact: </span>
+                    <span style={styles.emailLabel}> Contact: </span>
                     <a href={`mailto:${item.email}`} style={styles.emailLink}>
                       {item.email}
                     </a>
@@ -122,7 +127,7 @@ export default function Sponsors() {
                   </div>
                   <p style={styles.cardDesc}>{item.details}</p>
                   <div style={styles.emailWrapper}>
-                    <span style={styles.emailLabel}>📧 Contact: </span>
+                    <span style={styles.emailLabel}> Contact: </span>
                     <a href={`mailto:${item.email}`} style={styles.emailLink}>
                       {item.email}
                     </a>

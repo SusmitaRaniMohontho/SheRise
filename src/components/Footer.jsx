@@ -8,7 +8,7 @@ export default function Footer() {
         marginTop: "30px",
       }}
     >
-      <p>© 2026 Project. All Rights Reserved.</p>
+      <p> SheRise Project. All Rights Reserved.</p>
     </footer>
   );
 }

@@ -32,7 +32,7 @@ function Home() {
             onClick={() => navigate("/profile")}
             style={styles.actionBadgeBtn}
           >
-            👤 My Profile
+            My Profile
           </button>
         </div>
 
@@ -81,7 +81,7 @@ function Home() {
               onClick={() => navigate("/register")}
               style={styles.featurePill}
             >
-              <span style={styles.pillIcon}>✨</span>
+              <span style={styles.pillIcon}></span>
               <div>
                 <h4 style={styles.pillTitle}>Register</h4>
                 <p style={styles.pillDesc}>Create a new account or sign up</p>
@@ -89,7 +89,7 @@ function Home() {
             </div>
 
             <div onClick={() => navigate("/loan")} style={styles.featurePill}>
-              <span style={styles.pillIcon}>💳</span>
+              <span style={styles.pillIcon}></span>
               <div>
                 <h4 style={styles.pillTitle}>Loans & Grants</h4>
                 <p style={styles.pillDesc}>
@@ -102,7 +102,7 @@ function Home() {
               onClick={() => navigate("/library")}
               style={styles.featurePill}
             >
-              <span style={styles.pillIcon}>📚</span>
+              <span style={styles.pillIcon}></span>
               <div>
                 <h4 style={styles.pillTitle}>Digital Assets</h4>
                 <p style={styles.pillDesc}>
@@ -112,7 +112,7 @@ function Home() {
             </div>
 
             <div onClick={() => navigate("/help")} style={styles.featurePill}>
-              <span style={styles.pillIcon}>💬</span>
+              <span style={styles.pillIcon}></span>
               <div>
                 <h4 style={styles.pillTitle}>Help Center</h4>
                 <p style={styles.pillDesc}>
@@ -136,7 +136,7 @@ function Home() {
 
           <div style={styles.ecosystemGrid}>
             <div style={styles.ecoCard}>
-              <div style={styles.cardHeaderIcon}>📖</div>
+              <div style={styles.cardHeaderIcon}></div>
               <h3 style={styles.ecoTitle}>Learning & Resources</h3>
               <p style={styles.ecoText}>
                 Educational guides and digital assets for skill development.
@@ -158,7 +158,7 @@ function Home() {
             </div>
 
             <div style={styles.ecoCard}>
-              <div style={styles.cardHeaderIcon}>🤝</div>
+              <div style={styles.cardHeaderIcon}></div>
               <h3 style={styles.ecoTitle}>Support & Assistance</h3>
               <p style={styles.ecoText}>
                 Reach verified service providers and our dedicated help center.
@@ -177,7 +177,7 @@ function Home() {
             </div>
 
             <div style={styles.ecoCard}>
-              <div style={styles.cardHeaderIcon}>💼</div>
+              <div style={styles.cardHeaderIcon}></div>
               <h3 style={styles.ecoTitle}>Careers & Opportunities</h3>
               <p style={styles.ecoText}>
                 Explore career openings and corporate sponsorship programs.
@@ -196,7 +196,7 @@ function Home() {
             </div>
 
             <div style={styles.ecoCardSpecial}>
-              <div style={styles.cardHeaderIcon}>⚙️</div>
+              <div style={styles.cardHeaderIcon}></div>
               <h3 style={styles.ecoTitle}>System Management</h3>
               <p style={styles.ecoText}>
                 Administrative overview and system management panel.
@@ -220,7 +220,7 @@ function Home() {
               Finished exploring? You can safely log out of your session.
             </p>
             <button onClick={handleLogout} style={styles.logoutBtn}>
-              🚪 Log Out
+              Log Out
             </button>
           </div>
         </div>
