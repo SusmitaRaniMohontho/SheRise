@@ -56,7 +56,7 @@ export default function Providers() {
       </button>
 
       {/* 6. Title bar */}
-      <h1 style={headingStyle}>👩‍🏫 Service Providers & Mentors</h1>
+      <h1 style={headingStyle}> Service Providers & Mentors</h1>
       <p style={subtitleStyle}>
         Connect with expert mentors and professionals for guidance and support.
       </p>
@@ -111,7 +111,7 @@ export default function Providers() {
   );
 }
 
-// 🎨 12. CSS Styling Objects
+//  12. CSS Styling Objects
 const containerStyle = {
   padding: "40px 20px",
   maxWidth: "900px",

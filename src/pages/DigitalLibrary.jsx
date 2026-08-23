@@ -58,7 +58,7 @@ export default function DigitalLibrary() {
       </button>
 
       {/* Page header and subtitle */}
-      <h1 style={headingStyle}>📖 Digital Library</h1>
+      <h1 style={headingStyle}> Digital Library</h1>
       <p style={subtitleStyle}>
         Explore free resources, handbooks and e-books for learning.
       </p>
@@ -115,7 +115,7 @@ export default function DigitalLibrary() {
   );
 }
 
-// 🎨 Team er color palette r styling gulo
+//  Team er color palette r styling gulo
 const containerStyle = {
   padding: "40px 20px",
   maxWidth: "900px",

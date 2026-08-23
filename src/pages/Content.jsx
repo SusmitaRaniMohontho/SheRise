@@ -71,7 +71,7 @@ export default function EducationalContent() {
       </button>
 
       {/* Page Title & Description */}
-      <h1 style={headingStyle}>📖 Educational Content</h1>
+      <h1 style={headingStyle}> Educational Content</h1>
       <p style={subtitleStyle}>
         Read short career guides and test your knowledge with quick quizzes.
       </p>
@@ -98,7 +98,7 @@ export default function EducationalContent() {
 
       {/* Articles Section */}
       <div style={sectionStyle}>
-        <h2 style={subHeadingStyle}>📚 Short Reading Modules</h2>
+        <h2 style={subHeadingStyle}> Short Reading Modules</h2>
         <div style={gridStyle}>
           {filteredArticles.map((article) => (
             <div key={article.id} style={cardStyle}>
@@ -138,7 +138,7 @@ export default function EducationalContent() {
 
       {/* Quick Skill Quiz Section */}
       <div style={sectionStyle}>
-        <h2 style={subHeadingStyle}>💡 Quick Knowledge Check</h2>
+        <h2 style={subHeadingStyle}> Quick Knowledge Check</h2>
         <div style={quizBoxStyle}>
           <h3 style={quizQuestionStyle}>{quiz.question}</h3>
 
@@ -172,8 +172,8 @@ export default function EducationalContent() {
               }}
             >
               {selectedQuizOption === quiz.correct
-                ? "🎉 Correct Answer! Great job."
-                : "❌ Wrong Answer! Try again."}
+                ? " Correct Answer! Great job."
+                : " Wrong Answer! Try again."}
             </div>
           )}
         </div>
@@ -182,7 +182,7 @@ export default function EducationalContent() {
   );
 }
 
-// 🎨 CSS Styling Objects
+//  CSS Styling Objects
 const containerStyle = {
   padding: "40px 20px",
   maxWidth: "850px",

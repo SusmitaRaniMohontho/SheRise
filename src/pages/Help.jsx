@@ -106,7 +106,7 @@ export default function Help() {
 
       {/* User Guides Section */}
       <div style={sectionStyle}>
-        <h2 style={subHeadingStyle}>📚 User Guides & Tutorials</h2>
+        <h2 style={subHeadingStyle}> User Guides & Tutorials</h2>
         <div style={gridStyle}>
           {guides.map((guide) => (
             <div key={guide.id} style={guideCardStyle}>
@@ -157,7 +157,7 @@ export default function Help() {
         <h2 style={subHeadingStyle}>Send Us a Message</h2>
         {submitted ? (
           <div style={successBoxStyle}>
-            🎉 Thank you! Your message has been sent successfully.
+            Thank you! Your message has been sent successfully.
           </div>
         ) : (
           <form onSubmit={handleSubmit} style={formStyle}>
