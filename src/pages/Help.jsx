@@ -63,12 +63,30 @@ export default function Help() {
     },
   ];
 
-  // 7. Contact form submit handler
-  const handleSubmit = (e) => {
+  // 7. Contact form submit handler (UPDATED WITH BACKEND FETCH)
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.name && formData.email && formData.message) {
-      setSubmitted(true);
-      setFormData({ name: "", email: "", message: "" });
+
+    try {
+      const response = await fetch("http://localhost:5000/api/help", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSubmitted(true);
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        alert("Failed to send message: " + result.message);
+      }
+    } catch (error) {
+      console.error("Error connecting to backend:", error);
+      alert("Backend server connection failed! Make sure backend is running.");
     }
   };
 
@@ -274,7 +292,6 @@ const subHeadingStyle = {
   paddingBottom: "8px",
 };
 
-// 🔴 FIX 1: alignItem 'flex-start' add kora hoyeche jeno khali card lamba na hoy
 const gridStyle = {
   display: "grid",
   gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
@@ -282,7 +299,6 @@ const gridStyle = {
   alignItems: "flex-start",
 };
 
-// 🔴 FIX 2: justify-content carefully set kora hoyeche
 const guideCardStyle = {
   border: "1px solid #ba92d6",
   borderRadius: "12px",
@@ -340,7 +356,7 @@ const faqQuestionBtn = {
   border: "none",
   textAlign: "left",
   display: "flex",
-  justify: "space-between",
+  justifyContent: "space-between",
   alignItems: "center",
   fontSize: "15px",
   fontWeight: "bold",
