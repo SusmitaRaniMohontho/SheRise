@@ -4,32 +4,52 @@ import { useNavigate } from "react-router-dom";
 function Login() {
   const navigate = useNavigate();
 
+  // মোড ট্র্যাক করার জন্য: false মানে Login, true মানে Sign Up
+  const [isSignupMode, setIsSignupMode] = useState(false);
+
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
 
+    // মোড অনুযায়ী এন্ডপয়েন্ট এবং ডেটা সিলেক্ট হবে
+    const endpoint = isSignupMode
+      ? "http://localhost:5000/api/auth/signup"
+      : "http://localhost:5000/api/auth/login";
+
+    const requestBody = isSignupMode
+      ? { name, email, password }
+      : { email, password };
+
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        console.log("লগইন সফল হয়েছে:", data);
-        // চাইলে টোকেন সেভ করতে পারো: localStorage.setItem("token", data.token);
-        navigate("/home");
+        if (isSignupMode) {
+          console.log("সাইন-আপ সফল হয়েছে:", data);
+          alert("Registration successful! Please log in.");
+          // সাইন-আপ সফল হলে লগইন মোডে ফিরিয়ে নিয়ে যাব
+          setIsSignupMode(false);
+          setPassword("");
+        } else {
+          console.log("লগইন সফল হয়েছে:", data);
+          navigate("/home");
+        }
       } else {
         setErrorMessage(
-          data.message || "Invalid email or password. Please try again.",
+          data.message || "Something went wrong. Please try again.",
         );
       }
     } catch (error) {
@@ -38,8 +58,13 @@ function Login() {
     }
   };
 
-  const handleRegisterRedirect = () => {
-    navigate("/register"); // রেজিস্টার পেজের রাউট অনুযায়ী পাথ দিয়ে দিও
+  // মোড পরিবর্তন করার ফাংশন (লগইন থেকে সাইন-আপ বা উল্টোটা)
+  const toggleMode = () => {
+    setIsSignupMode(!isSignupMode);
+    setErrorMessage("");
+    setName("");
+    setEmail("");
+    setPassword("");
   };
 
   return (
@@ -58,11 +83,32 @@ function Login() {
 
         {/* Right Section: Form */}
         <div style={styles.rightSection}>
-          <form onSubmit={handleLogin} style={styles.form} autoComplete="off">
-            <h2 style={styles.formTitle}>Welcome Back</h2>
-            <p style={styles.formSubtitle}>Please log in to your account</p>
+          <form onSubmit={handleSubmit} style={styles.form} autoComplete="off">
+            <h2 style={styles.formTitle}>
+              {isSignupMode ? "Create Account" : "Welcome Back"}
+            </h2>
+            <p style={styles.formSubtitle}>
+              {isSignupMode
+                ? "Please sign up to get started"
+                : "Please log in to your account"}
+            </p>
 
             {errorMessage && <div style={styles.errorBox}>{errorMessage}</div>}
+
+            {/* যদি সাইন-আপ মোড হয়, তবেই শুধু নেম ফিল্ড দেখাবে */}
+            {isSignupMode && (
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter your name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  style={styles.input}
+                />
+              </div>
+            )}
 
             <div style={styles.inputGroup}>
               <label style={styles.label}>Email</label>
@@ -89,17 +135,21 @@ function Login() {
             </div>
 
             <button type="submit" style={styles.loginBtn}>
-              Log In
+              {isSignupMode ? "Sign Up" : "Log In"}
             </button>
 
             <div style={styles.registerBox}>
-              <span style={styles.registerText}>Don't have an account? </span>
+              <span style={styles.registerText}>
+                {isSignupMode
+                  ? "Already have an account? "
+                  : "Don't have an account? "}
+              </span>
               <button
                 type="button"
-                onClick={handleRegisterRedirect}
+                onClick={toggleMode}
                 style={styles.signUpBtn}
               >
-                Sign Up
+                {isSignupMode ? "Log In" : "Sign Up"}
               </button>
             </div>
           </form>
