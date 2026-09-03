@@ -4,27 +4,42 @@ import { useNavigate } from "react-router-dom";
 function Login() {
   const navigate = useNavigate();
 
-  // Static login credentials
-  const STATIC_EMAIL = "user@sherise.com";
-  const STATIC_PASSWORD = "123456";
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
 
-    if (email === STATIC_EMAIL && password === STATIC_PASSWORD) {
-      setErrorMessage("");
-      navigate("/home");
-    } else {
-      setErrorMessage("Invalid email or password. Please try again.");
+    try {
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log("লগইন সফল হয়েছে:", data);
+        // চাইলে টোকেন সেভ করতে পারো: localStorage.setItem("token", data.token);
+        navigate("/home");
+      } else {
+        setErrorMessage(
+          data.message || "Invalid email or password. Please try again.",
+        );
+      }
+    } catch (error) {
+      console.error("Connection error:", error);
+      setErrorMessage("Server error. Please make sure the backend is running.");
     }
   };
 
   const handleRegisterRedirect = () => {
-    console.log("Register button clicked - Backend integration pending.");
+    navigate("/register"); // রেজিস্টার পেজের রাউট অনুযায়ী পাথ দিয়ে দিও
   };
 
   return (
@@ -105,7 +120,7 @@ const styles = {
   },
   cardContainer: {
     display: "flex",
-    flexWrap: "wrap", // mobile jaiga na pele nice namiye dbe
+    flexWrap: "wrap",
     width: "100%",
     maxWidth: "900px",
     backgroundColor: "#ffffff",
@@ -115,7 +130,7 @@ const styles = {
     border: "1px solid #f3eafd",
   },
   leftSection: {
-    flex: "1 1 300px", // responsive korar flex size
+    flex: "1 1 300px",
     backgroundColor: "#ba92d6",
     display: "flex",
     alignItems: "center",
@@ -140,7 +155,7 @@ const styles = {
     opacity: 0.95,
   },
   rightSection: {
-    flex: "1 1 300px", // mobile er pashe jaiga na pele nice cole asbe
+    flex: "1 1 300px",
     padding: "40px",
     display: "flex",
     alignItems: "center",
