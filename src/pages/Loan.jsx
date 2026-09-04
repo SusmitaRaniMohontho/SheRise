@@ -17,15 +17,35 @@ export default function Loan() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Silently clears all input fields on submit without alerts
-    setFormData({
-      name: "",
-      address: "",
-      contact: "",
-      amount: "",
-    });
+
+    try {
+      const response = await fetch("http://localhost:5000/api/loans", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Loan application submitted successfully!");
+        setFormData({
+          name: "",
+          address: "",
+          contact: "",
+          amount: "",
+        });
+      } else {
+        alert(data.message || "Failed to submit loan application.");
+      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("Backend server connection failed! Make sure backend is running.");
+    }
   };
 
   return (
@@ -50,6 +70,7 @@ export default function Loan() {
               value={formData.name}
               onChange={handleChange}
               style={styles.input}
+              required
             />
           </div>
 
@@ -65,6 +86,7 @@ export default function Loan() {
               value={formData.address}
               onChange={handleChange}
               style={styles.input}
+              required
             />
           </div>
 
@@ -80,6 +102,7 @@ export default function Loan() {
               value={formData.contact}
               onChange={handleChange}
               style={styles.input}
+              required
             />
           </div>
 
@@ -95,6 +118,7 @@ export default function Loan() {
               value={formData.amount}
               onChange={handleChange}
               style={styles.input}
+              required
             />
           </div>
 
