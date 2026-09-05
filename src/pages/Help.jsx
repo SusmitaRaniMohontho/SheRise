@@ -68,16 +68,19 @@ export default function Help() {
     e.preventDefault();
 
     try {
+      // Backend API (http://localhost:5000/api/help) e POST request pathano hocche
+      // Jar maddhome Form er data backend controller e pouchabe ebong MongoDB te save hobe
       const response = await fetch("http://localhost:5000/api/help", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(formData), // Form er input data JSON banie backend e pathano hocche
       });
 
-      const result = await response.json();
+      const result = await response.json(); // Backend theke asa success response receive kora
 
+      // Backend theke success: true asle form reset ebong success message show korbe
       if (result.success) {
         setSubmitted(true);
         setFormData({ name: "", email: "", message: "" });
@@ -85,6 +88,7 @@ export default function Help() {
         alert("Failed to send message: " + result.message);
       }
     } catch (error) {
+      // Backend server bondho thakle ba network error hole ai catch block e asbe
       console.error("Error connecting to backend:", error);
       alert("Backend server connection failed! Make sure backend is running.");
     }
