@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 function Login() {
   const navigate = useNavigate();
 
-  // মোড ট্র্যাক করার জন্য: false মানে Login, true মানে Sign Up
+  // for mode tracking: false mean Login, true mean Sign Up
   const [isSignupMode, setIsSignupMode] = useState(false);
 
   const [name, setName] = useState("");
@@ -16,7 +16,7 @@ function Login() {
     e.preventDefault();
     setErrorMessage("");
 
-    // মোড অনুযায়ী এন্ডপয়েন্ট এবং ডেটা সিলেক্ট হবে
+    // mode wise endpoint and data selct
     const endpoint = isSignupMode
       ? "http://localhost:5000/api/auth/signup"
       : "http://localhost:5000/api/auth/login";
@@ -40,7 +40,7 @@ function Login() {
         if (isSignupMode) {
           console.log("সাইন-আপ সফল হয়েছে:", data);
           alert("Registration successful! Please log in.");
-          // সাইন-আপ সফল হলে লগইন মোডে ফিরিয়ে নিয়ে যাব
+          // sign up successful hole login e jbe
           setIsSignupMode(false);
           setPassword("");
         } else {
@@ -58,7 +58,7 @@ function Login() {
     }
   };
 
-  // মোড পরিবর্তন করার ফাংশন (লগইন থেকে সাইন-আপ বা উল্টোটা)
+  // mode cng function
   const toggleMode = () => {
     setIsSignupMode(!isSignupMode);
     setErrorMessage("");
@@ -95,7 +95,7 @@ function Login() {
 
             {errorMessage && <div style={styles.errorBox}>{errorMessage}</div>}
 
-            {/* যদি সাইন-আপ মোড হয়, তবেই শুধু নেম ফিল্ড দেখাবে */}
+            {/* shudhu sign up holei name fieeld dekhabe */}
             {isSignupMode && (
               <div style={styles.inputGroup}>
                 <label style={styles.label}>Name</label>
