@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Profile() {
@@ -9,7 +9,6 @@ function Profile() {
     email: "",
     role: "",
     bio: "",
-    //avatar link
     avatar: "https://cdn-icons-png.flaticon.com/512/727/727399.png",
     enrolledCourses: 0,
     savedJobs: 0,
@@ -17,6 +16,31 @@ function Profile() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(user);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      // বর্তমানে টোকেন চেক সাময়িকভাবে বন্ধ রাখা হয়েছে যাতে ইউআই দেখতে পারো
+      /*
+      const token = localStorage.getItem("token");
+      if (!token) {
+        navigate("/login");
+        return;
+      }
+      */
+      setLoading(false);
+    };
+
+    fetchUserProfile();
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    alert("Logged out successfully!");
+    navigate("/login");
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -27,7 +51,16 @@ function Profile() {
     e.preventDefault();
     setUser(formData);
     setIsEditing(false);
+    alert("Profile updated successfully!");
   };
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "50px" }}>
+        Loading profile...
+      </div>
+    );
+  }
 
   return (
     <div style={styles.pageWrapper}>
@@ -36,18 +69,25 @@ function Profile() {
         <button onClick={() => navigate("/home")} style={styles.backBtn}>
           ← Back to Home
         </button>
+        <button onClick={handleLogout} style={styles.logoutBtn}>
+          Logout 🚪
+        </button>
       </div>
 
       <div style={styles.container}>
+        {errorMessage && <div style={styles.errorBox}>{errorMessage}</div>}
+
         {/* Profile Card Header */}
         <div style={styles.profileCard}>
           <div style={styles.avatarSection}>
             <img src={user.avatar} alt="Profile Avatar" style={styles.avatar} />
             <div style={styles.userInfo}>
-              <h1 style={styles.userName}>{user.name || "Your Name Here"}</h1>
-              <p style={styles.userRole}>{user.role || "Your Role / Major"}</p>
+              <h1 style={styles.userName}>{user.name || "Ankita Sristy"}</h1>
+              <p style={styles.userRole}>
+                {user.role || "Computer Science Student"}
+              </p>
               <p style={styles.userEmail}>
-                {user.email || "your.email@example.com"}
+                {user.email || "ankitasristy35@gmail.com"}
               </p>
             </div>
           </div>
@@ -70,8 +110,8 @@ function Profile() {
             <p style={styles.statLabel}>Saved Opportunities</p>
           </div>
           <div style={styles.statBox}>
-            <h3 style={styles.statNumber}>Active</h3>
-            <p style={styles.statLabel}>Account Status</p>
+            <h3 style={styles.statNumber}>Secure</h3>
+            <p style={styles.statLabel}>JWT Authenticated</p>
           </div>
         </div>
 
@@ -154,6 +194,9 @@ const styles = {
     maxWidth: "900px",
     margin: "0 auto",
     padding: "20px 20px 0 20px",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   backBtn: {
     backgroundColor: "transparent",
@@ -165,10 +208,30 @@ const styles = {
     cursor: "pointer",
     fontSize: "0.9rem",
   },
+  logoutBtn: {
+    backgroundColor: "#ffebee",
+    color: "#e53e3e",
+    border: "1.5px solid #feb2b2",
+    padding: "8px 16px",
+    borderRadius: "20px",
+    fontWeight: "700",
+    cursor: "pointer",
+    fontSize: "0.9rem",
+  },
   container: {
     padding: "20px",
     maxWidth: "900px",
     margin: "0 auto",
+  },
+  errorBox: {
+    backgroundColor: "#fff0f0",
+    color: "#e53e3e",
+    padding: "10px",
+    borderRadius: "8px",
+    fontSize: "0.85rem",
+    marginBottom: "15px",
+    border: "1px solid #feb2b2",
+    textAlign: "center",
   },
   profileCard: {
     backgroundColor: "#ffffff",
