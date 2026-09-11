@@ -16,7 +16,7 @@ function Login() {
     e.preventDefault();
     setErrorMessage("");
 
-    // mode wise endpoint and data selct
+    // mode wise endpoint and data select
     const endpoint = isSignupMode
       ? "http://localhost:5000/api/auth/signup"
       : "http://localhost:5000/api/auth/login";
@@ -24,9 +24,10 @@ function Login() {
     const requestBody = isSignupMode
       ? { name, email, password }
       : { email, password };
-
+    //request sent
     try {
       const response = await fetch(endpoint, {
+        //response er vtr http status
         method: "POST",
         headers: {
           "Content-Type": "application/json",
