@@ -1,10 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import homeHeroImg from "../assets/Home-pic.jpeg";
 
 function Home() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+
+  // 🔴 ১০ সেকেন্ড পর অটোমেটিক সেশন এক্সপায়ার করে লগইন পেজে রিডাইরেক্ট করার লজিক
+  useEffect(() => {
+    const sessionTimer = setTimeout(async () => {
+      try {
+        // ব্যাকএন্ডে একটি রিকোয়েস্ট পাঠিয়ে কুকি ক্লিয়ার বা সেশন ড্রপ করা যেতে পারে
+        // অথবা সরাসরি লগইন পেজে রিডাইরেক্ট করে দেওয়া
+        console.log(
+          "১০ সেকেন্ড পূর্ণ হয়েছে, সেশন শেষ। লগইন পেজে পাঠানো হচ্ছে...",
+        );
+      } catch (error) {
+        console.error("Session expiry error:", error);
+      } finally {
+        // লোকাল স্টোরেজে রাখা ইউজারনেম মুছে ফেলা এবং লগইন পেজে পাঠানো
+        localStorage.removeItem("userName");
+        navigate("/login", { replace: true });
+      }
+    }, 10000); // ঠিক ১০ সেকেন্ড (10000 ms)
+
+    // কম্পোনেন্ট আনমাউন্ট হলে টাইমার ক্লিনআপ করা
+    return () => clearTimeout(sessionTimer);
+  }, [navigate]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -13,11 +35,6 @@ function Home() {
     } else {
       navigate("/search");
     }
-  };
-
-  const handleLogout = () => {
-    console.log("User logged out");
-    navigate("/login");
   };
 
   return (
@@ -208,20 +225,6 @@ function Home() {
                 Admin Dashboard
               </button>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 5. Account Operations */}
-      <div style={styles.logoutSectionWrapper}>
-        <div style={styles.contentWidth}>
-          <div style={styles.logoutBox}>
-            <p style={styles.logoutText}>
-              Finished exploring? You can safely log out of your session.
-            </p>
-            <button onClick={handleLogout} style={styles.logoutBtn}>
-              Log Out
-            </button>
           </div>
         </div>
       </div>
@@ -456,38 +459,6 @@ const styles = {
     color: "#ffffff",
     border: "none",
     padding: "11px",
-    borderRadius: "8px",
-    fontWeight: "700",
-    fontSize: "0.9rem",
-    cursor: "pointer",
-  },
-  logoutSectionWrapper: {
-    backgroundColor: "#ffffff",
-    padding: "40px 20px 60px 20px",
-    borderTop: "1px solid #f0e6f7",
-  },
-  logoutBox: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#fff5f5",
-    padding: "20px 30px",
-    borderRadius: "16px",
-    border: "1px solid #ffe3e3",
-    flexWrap: "wrap",
-    gap: "15px",
-  },
-  logoutText: {
-    margin: 0,
-    color: "#c92a2a",
-    fontSize: "0.95rem",
-    fontWeight: "500",
-  },
-  logoutBtn: {
-    backgroundColor: "#e03131",
-    color: "#ffffff",
-    border: "none",
-    padding: "10px 24px",
     borderRadius: "8px",
     fontWeight: "700",
     fontSize: "0.9rem",

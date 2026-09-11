@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 function Profile() {
   const navigate = useNavigate();
 
+  // ১. কোনো হার্ডকোডেড ডেটা নেই, একদম ব্ল্যাঙ্ক বা ইনিশিয়াল স্টেট
   const [user, setUser] = useState({
     name: "",
     email: "",
@@ -19,22 +20,55 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
+  // ২. পেজ লোড হওয়ার সাথে সাথে ব্যাকএন্ড থেকে ইউজারের আসল ডেটা ফেচ করা (API Connection)
   useEffect(() => {
     const fetchUserProfile = async () => {
-      // বর্তমানে টোকেন চেক সাময়িকভাবে বন্ধ রাখা হয়েছে যাতে ইউআই দেখতে পারো
-      /*
       const token = localStorage.getItem("token");
+
+      // সিকিউরিটি গার্ড: টোকেন না থাকলে লগইন পেজে রিডাইরেক্ট হবে
       if (!token) {
         navigate("/login");
         return;
       }
-      */
-      setLoading(false);
+
+      try {
+        // ব্যাকএন্ডের প্রোফাইল রাউটে রিকোয়েস্ট পাঠানো (তোমার ব্যাকএন্ড রাউটের URL অনুযায়ী এটা বসবে)
+        const response = await fetch(
+          "http://localhost:5000/api/users/profile",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // JWT টোকেন পাস করা হচ্ছে
+            },
+          },
+        );
+
+        const data = await response.json();
+
+        if (response.ok) {
+          setUser(data); // ডেটাবেজ থেকে আসা রিয়েল ইউজার ডেটা সেট করা
+          setFormData(data); // এডিট ফর্মের জন্যও ডেটা সেট করে রাখা
+        } else {
+          setErrorMessage(data.message || "Failed to load profile data.");
+          if (response.status === 401) {
+            // টোকেন ইনভ্যালিড বা এক্সপায়ার্ড হলে লগআউট করে দেওয়া
+            localStorage.removeItem("token");
+            navigate("/login");
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        setErrorMessage("Server connection error. Please check your backend.");
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchUserProfile();
   }, [navigate]);
 
+  // ৩. প্রফেশনাল লগ-আউট হ্যান্ডলার
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
@@ -47,17 +81,47 @@ function Profile() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSave = (e) => {
+  // ৪. প্রোফাইল আপডেট বা এডিট করার পর ব্যাকএন্ডে পাঠানোর ফাংশন (PUT/PATCH Request)
+  const handleSave = async (e) => {
     e.preventDefault();
-    setUser(formData);
-    setIsEditing(false);
-    alert("Profile updated successfully!");
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch("http://localhost:5000/api/users/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setUser(data); // আপডেট হওয়া ডেটা স্টেটে সেট করা
+        setIsEditing(false);
+        alert("Profile updated successfully in database!");
+      } else {
+        alert(data.message || "Failed to update profile.");
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("Server error during update.");
+    }
   };
 
   if (loading) {
     return (
-      <div style={{ textAlign: "center", marginTop: "50px" }}>
-        Loading profile...
+      <div
+        style={{
+          textAlign: "center",
+          marginTop: "100px",
+          fontSize: "1.2rem",
+          color: "#ba92d6",
+        }}
+      >
+        Loading your professional profile from database...
       </div>
     );
   }
@@ -77,18 +141,14 @@ function Profile() {
       <div style={styles.container}>
         {errorMessage && <div style={styles.errorBox}>{errorMessage}</div>}
 
-        {/* Profile Card Header */}
+        {/* Profile Card Header (Dynamic Data from DB) */}
         <div style={styles.profileCard}>
           <div style={styles.avatarSection}>
             <img src={user.avatar} alt="Profile Avatar" style={styles.avatar} />
             <div style={styles.userInfo}>
-              <h1 style={styles.userName}>{user.name || "Ankita Sristy"}</h1>
-              <p style={styles.userRole}>
-                {user.role || "Computer Science Student"}
-              </p>
-              <p style={styles.userEmail}>
-                {user.email || "ankitasristy35@gmail.com"}
-              </p>
+              <h1 style={styles.userName}>{user.name || "User Name"}</h1>
+              <p style={styles.userRole}>{user.role || "Role not set"}</p>
+              <p style={styles.userEmail}>{user.email || "user@example.com"}</p>
             </div>
           </div>
           <button
@@ -102,11 +162,11 @@ function Profile() {
         {/* Stats Section */}
         <div style={styles.statsContainer}>
           <div style={styles.statBox}>
-            <h3 style={styles.statNumber}>{user.enrolledCourses}</h3>
+            <h3 style={styles.statNumber}>{user.enrolledCourses || 0}</h3>
             <p style={styles.statLabel}>Enrolled Courses</p>
           </div>
           <div style={styles.statBox}>
-            <h3 style={styles.statNumber}>{user.savedJobs}</h3>
+            <h3 style={styles.statNumber}>{user.savedJobs || 0}</h3>
             <p style={styles.statLabel}>Saved Opportunities</p>
           </div>
           <div style={styles.statBox}>
@@ -125,7 +185,6 @@ function Profile() {
                 <input
                   type="text"
                   name="name"
-                  placeholder="Enter your name"
                   value={formData.name}
                   onChange={handleInputChange}
                   style={styles.input}
@@ -137,7 +196,6 @@ function Profile() {
                 <input
                   type="email"
                   name="email"
-                  placeholder="Enter your email"
                   value={formData.email}
                   onChange={handleInputChange}
                   style={styles.input}
@@ -149,7 +207,6 @@ function Profile() {
                 <input
                   type="text"
                   name="role"
-                  placeholder="e.g. Computer Science Student"
                   value={formData.role}
                   onChange={handleInputChange}
                   style={styles.input}
@@ -159,14 +216,13 @@ function Profile() {
                 <label style={styles.label}>Bio</label>
                 <textarea
                   name="bio"
-                  placeholder="Write something about yourself"
                   value={formData.bio}
                   onChange={handleInputChange}
                   style={styles.textarea}
                 />
               </div>
               <button type="submit" style={styles.saveBtn}>
-                Save Changes
+                Save Changes to Database
               </button>
             </form>
           </div>
@@ -175,7 +231,7 @@ function Profile() {
             <h3 style={styles.sectionTitle}>About Me</h3>
             <p style={styles.bioText}>
               {user.bio ||
-                "No bio added yet. Click 'Edit Profile' to add your information."}
+                "No bio added yet. Click 'Edit Profile' to add your professional summary."}
             </p>
           </div>
         )}

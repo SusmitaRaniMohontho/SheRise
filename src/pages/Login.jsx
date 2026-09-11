@@ -1,8 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
   const navigate = useNavigate();
+
+  // 🔴 প্রটেকশন: অলরেডি লগইন করা থাকলে ব্রাউজারের ব্যাক বাটন বা ইউআরএল দিয়ে লগইন পেজে ঢুকতে দেবে না
+  useEffect(() => {
+    const userName = localStorage.getItem("userName");
+    if (userName) {
+      navigate("/home", { replace: true });
+    }
+  }, [navigate]);
 
   // for mode tracking: false mean Login, true mean Sign Up
   const [isSignupMode, setIsSignupMode] = useState(false);
@@ -24,14 +32,15 @@ function Login() {
     const requestBody = isSignupMode
       ? { name, email, password }
       : { email, password };
+
     //request sent
     try {
       const response = await fetch(endpoint, {
-        //response er vtr http status
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include", // 🔴 ব্যাকএন্ড থেকে পাঠানো HttpOnly Cookie ব্রাউজারে সেভ করার জন্য অত্যন্ত জরুরি
         body: JSON.stringify(requestBody),
       });
 
@@ -41,16 +50,24 @@ function Login() {
         if (isSignupMode) {
           console.log("সাইন-আপ সফল হয়েছে:", data);
           alert("Registration successful! Please log in.");
-          // sign up successful hole login e jbe
           setIsSignupMode(false);
           setPassword("");
         } else {
           console.log("লগইন সফল হয়েছে:", data);
-          navigate("/home");
+
+          // ইউজারনেম সেভ করে রাখা যাতে রাউটিংয়ে সুবিধা হয়
+          if (data.name) {
+            localStorage.setItem("userName", data.name);
+          }
+
+          // 🔴 replace: true ব্যবহার করার ফলে ব্রাউজার হিস্টরি থেকে লগইন পেজ ওভাররাইট হয়ে যাবে
+          navigate("/home", { replace: true });
         }
       } else {
         setErrorMessage(
-          data.message || "Something went wrong. Please try again.",
+          data.message ||
+            data.error ||
+            "Something went wrong. Please try again.",
         );
       }
     } catch (error) {
