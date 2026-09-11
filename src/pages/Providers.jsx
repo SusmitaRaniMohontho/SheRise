@@ -1,218 +1,291 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+
+const initialProviders = [
+  {
+    id: "p1",
+    name: "Dr. Sarah Khan",
+    role: "Mental Health Counselor",
+    tags: "Psychology, Self-care",
+  },
+  {
+    id: "p2",
+    name: "Jane Doe",
+    role: "Senior Software Engineer",
+    tags: "React, Frontend, Career",
+  },
+  {
+    id: "p3",
+    name: "Ananya Sharma",
+    role: "Financial Advisor",
+    tags: "Banking, Investment, Loan",
+  },
+];
 
 export default function Providers() {
-  // 1. Home page-e jawar jnne router hook
-  const navigate = useNavigate();
-
-  // 2. Search box-er lekha rakhar state
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedProvider, setSelectedProvider] = useState(null);
 
-  // 3. Mentors data list (Experience chara)
-  const providers = [
-    {
-      id: 1,
-      name: "Dr. Sarah Khan",
-      role: "Mental Health Counselor",
-      expertise: "Psychology, Self-care",
-      about:
-        "Providing 1-on-1 counseling and mental well-being guidance for women.",
-    },
-    {
-      id: 2,
-      name: "Jane Doe",
-      role: "Senior Software Engineer",
-      expertise: "React, Frontend, Career",
-      about:
-        "Helps young women break into tech with mentorship and code reviews.",
-    },
-    {
-      id: 3,
-      name: "Amina Rahman",
-      role: "Financial Consultant",
-      expertise: "Investment, Budgeting",
-      about:
-        "Guides individuals on managing personal finances and business loans.",
-    },
-    {
-      id: 4,
-      name: "Nusrat Jahan",
-      role: "UI/UX Design Trainer",
-      expertise: "Figma, Product Design",
-      about: "Teaches design fundamentals and portfolio building techniques.",
-    },
-  ];
+  // Form State
+  const [date, setDate] = useState("");
+  const [timeSlot, setTimeSlot] = useState("");
+  const [note, setNote] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // 4. Name diye search filter logic
-  const filteredProviders = providers.filter((provider) =>
-    provider.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  // 🔴 ১. পুরান তারিখ ব্লক করার জন্য আজকের তারিখ বের করা হলো (YYYY-MM-DD format)
+  const today = new Date().toISOString().split("T")[0];
+
+  // Search filter
+  const filteredProviders = initialProviders.filter(
+    (p) =>
+      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.tags.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
+  // Booking Submit Function
+  const handleBookingSubmit = async (e) => {
+    e.preventDefault();
+    setMessage("");
+    setLoading(true);
+
+    try {
+      const response = await fetch("http://localhost:5000/api/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // JWT Cookie অটোমেটিক পাঠানোর জন্য
+
+        body: JSON.stringify({
+          providerId: selectedProvider.id,
+          providerName: selectedProvider.name,
+          date,
+          timeSlot,
+          note,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("🎉 Appointment Booked Successfully!");
+        setSelectedProvider(null); // Modal বন্ধ করা
+        setDate("");
+        setTimeSlot("");
+        setNote("");
+      } else {
+        setMessage(data.error || "Failed to book appointment");
+      }
+    } catch (err) {
+      console.error(err);
+      setMessage("Server connection failed. Make sure backend is running.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div style={containerStyle}>
-      {/* 5. Back button */}
-      <button style={backBtn} onClick={() => navigate("/home")}>
-        ← Back to Home
-      </button>
+    <div style={styles.container}>
+      <h2>Service Providers & Mentors</h2>
+      <p>Search and book appointments with experts.</p>
 
-      {/* 6. Title bar */}
-      <h1 style={headingStyle}> Service Providers & Mentors</h1>
-      <p style={subtitleStyle}>
-        Connect with expert mentors and professionals for guidance and support.
-      </p>
+      {/* Search Input */}
+      <input
+        type="text"
+        placeholder="Search by name or category..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={styles.searchInput}
+      />
 
-      {/* 7. Search input box */}
-      <div style={searchContainerStyle}>
-        <input
-          type="text"
-          placeholder="Enter mentor or provider name..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={searchInputStyle}
-        />
+      {/* Provider List Grid */}
+      <div style={styles.grid}>
+        {filteredProviders.map((provider) => (
+          <div key={provider.id} style={styles.card}>
+            <h3>{provider.name}</h3>
+            <p style={styles.role}>{provider.role}</p>
+            <p style={styles.tags}>{provider.tags}</p>
+            <button
+              onClick={() => {
+                setSelectedProvider(provider);
+                setMessage("");
+              }}
+              style={styles.bookBtn}
+            >
+              Book Appointment
+            </button>
+          </div>
+        ))}
       </div>
 
-      {/* 8. Provider cards grid */}
-      <div style={gridStyle}>
-        {filteredProviders.length > 0 ? (
-          filteredProviders.map((provider) => (
-            <div key={provider.id} style={cardStyle}>
-              <div>
-                {/* 9. Nam ebong nam-er thik niche Occupation/Role */}
-                <h3 style={titleStyle}>{provider.name}</h3>
-                <div style={{ marginBottom: "10px" }}>
-                  <span style={tagStyle}>{provider.role}</span>
-                </div>
+      {/* Booking Modal Popup */}
+      {selectedProvider && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalCard}>
+            <h3>Book Session with {selectedProvider.name}</h3>
+            <p style={{ fontSize: "0.9rem", color: "#666" }}>
+              Role: {selectedProvider.role}
+            </p>
 
-                <p style={expertiseStyle}>
-                  Specialized in: <strong>{provider.expertise}</strong>
-                </p>
-                <p style={descStyle}>{provider.about}</p>
+            {message && <div style={styles.errorBox}>{message}</div>}
+
+            <form onSubmit={handleBookingSubmit} style={styles.form}>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Select Date:</label>
+                <input
+                  type="date"
+                  required
+                  min={today} // 🔴 ২. পুরান তারিখ সিলেক্ট করা আটকানোর জন্য min যুক্ত করা হলো
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  style={styles.input}
+                />
               </div>
 
-              {/* 10. Booking button */}
-              <button style={actionBtn}>Book Appointment</button>
-            </div>
-          ))
-        ) : (
-          /* 11. Search e na pele ai message */
-          <p
-            style={{
-              color: "#666666",
-              gridColumn: "1 / -1",
-              textAlign: "center",
-            }}
-          >
-            No provider found with this name.
-          </p>
-        )}
-      </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Select Time Slot:</label>
+                <input
+                  type="time"
+                  required
+                  value={timeSlot}
+                  onChange={(e) => setTimeSlot(e.target.value)}
+                  style={styles.input}
+                />
+              </div>
+
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>Note (Optional):</label>
+                <textarea
+                  placeholder="Describe what you want to discuss..."
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  style={{ ...styles.input, height: "60px" }}
+                />
+              </div>
+
+              <div style={styles.btnGroup}>
+                <button
+                  type="button"
+                  onClick={() => setSelectedProvider(null)}
+                  style={styles.cancelBtn}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  style={styles.confirmBtn}
+                >
+                  {loading ? "Booking..." : "Confirm Booking"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-//  12. CSS Styling Objects
-const containerStyle = {
-  padding: "40px 20px",
-  maxWidth: "900px",
-  margin: "0 auto",
-  textAlign: "center",
-  backgroundColor: "#ffffff",
-};
-
-const backBtn = {
-  background: "none",
-  border: "none",
-  color: "#ba92d6",
-  fontWeight: "bold",
-  cursor: "pointer",
-  marginBottom: "20px",
-  fontSize: "15px",
-};
-
-const headingStyle = {
-  color: "#ba92d6",
-  fontSize: "32px",
-  marginBottom: "8px",
-};
-
-const subtitleStyle = {
-  color: "#666666",
-  marginBottom: "25px",
-  fontSize: "15px",
-};
-
-const searchContainerStyle = {
-  maxWidth: "450px",
-  margin: "0 auto 35px auto",
-};
-
-const searchInputStyle = {
-  width: "100%",
-  padding: "12px 18px",
-  borderRadius: "25px",
-  border: "2px solid #ba92d6",
-  outline: "none",
-  fontSize: "14px",
-  color: "#333333",
-  boxSizing: "border-box",
-};
-
-const gridStyle = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-  gap: "24px",
-  textAlign: "left",
-};
-
-const cardStyle = {
-  backgroundColor: "#ffffff",
-  padding: "24px",
-  borderRadius: "16px",
-  border: "1px solid #ba92d6",
-  boxShadow: "0 4px 15px rgba(186, 146, 214, 0.25)",
-  display: "flex",
-  flexDirection: "column",
-  justify: "space-between",
-};
-
-const tagStyle = {
-  backgroundColor: "rgba(186, 146, 214, 0.15)",
-  color: "#ba92d6",
-  padding: "4px 12px",
-  borderRadius: "8px",
-  fontSize: "12px",
-  fontWeight: "bold",
-  display: "inline-block",
-};
-
-const titleStyle = {
-  margin: "0 0 6px 0",
-  color: "#333333",
-  fontSize: "18px",
-};
-
-const expertiseStyle = {
-  fontSize: "13px",
-  color: "#666666",
-  marginBottom: "10px",
-};
-
-const descStyle = {
-  fontSize: "14px",
-  color: "#666666",
-  lineHeight: "1.4",
-  marginBottom: "20px",
-};
-
-const actionBtn = {
-  width: "100%",
-  padding: "10px",
-  backgroundColor: "#ba92d6",
-  color: "#ffffff",
-  border: "none",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontWeight: "bold",
-  fontSize: "14px",
+// Inline Styles
+const styles = {
+  container: { padding: "30px", maxWidth: "900px", margin: "0 auto" },
+  searchInput: {
+    width: "100%",
+    padding: "12px",
+    borderRadius: "8px",
+    border: "1.5px solid #ba92d6",
+    marginBottom: "25px",
+    boxSizing: "border-box",
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+    gap: "20px",
+  },
+  card: {
+    border: "1px solid #e0d0f0",
+    borderRadius: "12px",
+    padding: "20px",
+    backgroundColor: "#fff",
+    boxShadow: "0 4px 12px rgba(186, 146, 214, 0.15)",
+    textAlign: "center",
+    display: "flex",
+    flexDirection: "column",
+    justifyInContent: "space-between",
+  },
+  role: { fontWeight: "600", color: "#ba92d6", margin: "5px 0" },
+  tags: { fontSize: "0.85rem", color: "#777", marginBottom: "15px" },
+  bookBtn: {
+    width: "100%",
+    padding: "10px",
+    backgroundColor: "#ba92d6",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontWeight: "600",
+  },
+  modalOverlay: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalCard: {
+    backgroundColor: "#fff",
+    padding: "25px",
+    borderRadius: "12px",
+    width: "90%",
+    maxWidth: "400px",
+    boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
+  },
+  errorBox: {
+    backgroundColor: "#ffe6e6",
+    color: "#d9534f",
+    padding: "10px",
+    borderRadius: "6px",
+    fontSize: "0.85rem",
+    marginBottom: "10px",
+  },
+  form: { marginTop: "15px" },
+  inputGroup: { marginBottom: "12px" },
+  label: {
+    display: "block",
+    fontSize: "0.85rem",
+    fontWeight: "600",
+    marginBottom: "4px",
+    textAlign: "left",
+  },
+  input: {
+    width: "100%",
+    padding: "8px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
+    boxSizing: "border-box",
+  },
+  btnGroup: { display: "flex", gap: "10px", marginTop: "15px" },
+  cancelBtn: {
+    flex: 1,
+    padding: "10px",
+    backgroundColor: "#eee",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+  },
+  confirmBtn: {
+    flex: 1,
+    padding: "10px",
+    backgroundColor: "#ba92d6",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
+    cursor: "pointer",
+    fontWeight: "600",
+  },
 };

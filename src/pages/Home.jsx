@@ -7,8 +7,8 @@ function Home() {
   const [searchQuery, setSearchQuery] = useState("");
 
   // 🔴 ১০ সেকেন্ড পর অটোমেটিক সেশন এক্সপায়ার করে লগইন পেজে রিডাইরেক্ট করার লজিক
-  useEffect(() => {
-    const sessionTimer = setTimeout(async () => {
+  /*useEffect(() => {
+    //const sessionTimer = setTimeout(async () => {
       try {
         // ব্যাকএন্ডে একটি রিকোয়েস্ট পাঠিয়ে কুকি ক্লিয়ার বা সেশন ড্রপ করা যেতে পারে
         // অথবা সরাসরি লগইন পেজে রিডাইরেক্ট করে দেওয়া
@@ -22,11 +22,11 @@ function Home() {
         localStorage.removeItem("userName");
         navigate("/login", { replace: true });
       }
-    }, 10000); // ঠিক ১০ সেকেন্ড (10000 ms)
+    }, 10000);*/ // ঠিক ১০ সেকেন্ড (10000 ms)
 
-    // কম্পোনেন্ট আনমাউন্ট হলে টাইমার ক্লিনআপ করা
-    return () => clearTimeout(sessionTimer);
-  }, [navigate]);
+  // কম্পোনেন্ট আনমাউন্ট হলে টাইমার ক্লিনআপ করা
+  //return () => clearTimeout(sessionTimer);
+  //}, [navigate]);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
