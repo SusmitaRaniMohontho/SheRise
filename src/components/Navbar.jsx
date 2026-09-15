@@ -38,13 +38,10 @@ export default function Navbar() {
         flexWrap: "wrap",
       }}
     >
-      {/* নেভবারের বাম পাশের মূল লিংকগুলো */}
+      {/* নেভবারের বাম পাশের মূল লিংকগুলো (Jobs বাদ দেওয়া হয়েছে) */}
       <div style={{ display: "flex", gap: "15px", flexWrap: "wrap" }}>
         <Link to="/home" style={{ color: "#fff", textDecoration: "none" }}>
           Home
-        </Link>
-        <Link to="/jobs" style={{ color: "#fff", textDecoration: "none" }}>
-          Jobs
         </Link>
       </div>
 

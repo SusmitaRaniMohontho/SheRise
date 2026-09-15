@@ -216,7 +216,7 @@ function Profile() {
                 />
               </div>
               <button type="submit" style={styles.saveBtn}>
-                Save Changes to Database
+                Save Changes
               </button>
             </form>
           </div>
