@@ -7,6 +7,7 @@ function Profile() {
   const [user, setUser] = useState({
     name: "",
     email: "",
+    role: "SheRise Community Member",
     bio: "",
     avatar: "https://cdn-icons-png.flaticon.com/512/727/727399.png",
   });
@@ -72,6 +73,7 @@ function Profile() {
           },
           body: JSON.stringify({
             name: formData.name,
+            role: formData.role,
             bio: formData.bio,
           }),
         },
@@ -116,10 +118,23 @@ function Profile() {
         {/* Profile Card Header */}
         <div style={styles.profileCard}>
           <div style={styles.avatarSection}>
-            <img src={user.avatar} alt="Profile Avatar" style={styles.avatar} />
+            <img
+              src={
+                user.avatar ||
+                "https://cdn-icons-png.flaticon.com/512/727/727399.png"
+              }
+              alt="Avatar"
+              style={styles.avatar}
+              onError={(e) => {
+                e.target.src =
+                  "https://cdn-icons-png.flaticon.com/512/727/727399.png";
+              }}
+            />
             <div style={styles.userInfo}>
               <h1 style={styles.userName}>{user.name || "User Name"}</h1>
-              <p style={styles.userRole}>Developer / Student</p>
+              <p style={styles.userRole}>
+                {user.role || "SheRise Community Member"}
+              </p>
               <p style={styles.userEmail}>{user.email || "user@example.com"}</p>
             </div>
           </div>
@@ -138,12 +153,12 @@ function Profile() {
             <p style={styles.statLabel}>Account Status</p>
           </div>
           <div style={styles.statBox}>
-            <h3 style={styles.statNumber}>Secure</h3>
-            <p style={styles.statLabel}>HttpOnly Cookie Auth</p>
+            <h3 style={styles.statNumber}>SheRise</h3>
+            <p style={styles.statLabel}>Empowerment Member</p>
           </div>
           <div style={styles.statBox}>
-            <h3 style={styles.statNumber}>MongoDB</h3>
-            <p style={styles.statLabel}>Database Connected</p>
+            <h3 style={styles.statNumber}>Support</h3>
+            <p style={styles.statLabel}>Loans, Jobs & Study</p>
           </div>
         </div>
 
@@ -175,6 +190,19 @@ function Profile() {
                     backgroundColor: "#f0f0f0",
                     cursor: "not-allowed",
                   }}
+                />
+              </div>
+              <div style={styles.inputGroup}>
+                <label style={styles.label}>
+                  Your Role / Title (e.g., Job Seeker, Entrepreneur, Learner)
+                </label>
+                <input
+                  type="text"
+                  name="role"
+                  value={formData.role || ""}
+                  onChange={handleInputChange}
+                  style={styles.input}
+                  placeholder="e.g. Job Seeker / Entrepreneur"
                 />
               </div>
               <div style={styles.inputGroup}>
@@ -252,8 +280,8 @@ const styles = {
     borderRadius: "50%",
     backgroundColor: "#f4edf7",
     border: "2px solid #ba92d6",
-    padding: "8px",
-    objectFit: "contain",
+    padding: "4px",
+    objectFit: "cover",
   },
   userName: {
     margin: "0 0 5px 0",
