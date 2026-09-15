@@ -5,12 +5,12 @@ function Login() {
   const navigate = useNavigate();
 
   // 🔴 প্রটেকশন: অলরেডি লগইন করা থাকলে ব্রাউজারের ব্যাক বাটন বা ইউআরএল দিয়ে লগইন পেজে ঢুকতে দেবে না
-  /* useEffect(() => {
+  useEffect(() => {
     const userName = localStorage.getItem("userName");
     if (userName) {
       navigate("/home", { replace: true });
     }
-  }, [navigate]);*/
+  }, [navigate]);
 
   // for mode tracking: false mean Login, true mean Sign Up
   const [isSignupMode, setIsSignupMode] = useState(false);
