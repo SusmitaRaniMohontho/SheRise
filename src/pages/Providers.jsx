@@ -1,48 +1,40 @@
-import React, { useState } from "react";
-
-const initialProviders = [
-  {
-    id: "p1",
-    name: "Dr. Sarah Khan",
-    role: "Mental Health Counselor",
-    tags: "Psychology, Self-care",
-  },
-  {
-    id: "p2",
-    name: "Jane Doe",
-    role: "Senior Software Engineer",
-    tags: "React, Frontend, Career",
-  },
-  {
-    id: "p3",
-    name: "Ananya Sharma",
-    role: "Financial Advisor",
-    tags: "Banking, Investment, Loan",
-  },
-];
+import React, { useState, useEffect } from "react";
 
 export default function Providers() {
+  const [providers, setProviders] = useState([]); // ডাটাবেসের ডাটার জন্য খালি অ্যারে
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProvider, setSelectedProvider] = useState(null);
 
-  // Form State
   const [date, setDate] = useState("");
   const [timeSlot, setTimeSlot] = useState("");
   const [note, setNote] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 🔴 ১. পুরান তারিখ ব্লক করার জন্য আজকের তারিখ বের করা হলো (YYYY-MM-DD format)
   const today = new Date().toISOString().split("T")[0];
 
-  // Search filter
-  const filteredProviders = initialProviders.filter(
+  // ডাটাবেস থেকে প্রভাইডার নিয়ে আসার ফাংশন
+  useEffect(() => {
+    const fetchProviders = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/providers");
+        const data = await response.json();
+        if (response.ok) {
+          setProviders(data);
+        }
+      } catch (err) {
+        console.error("Error fetching providers:", err);
+      }
+    };
+    fetchProviders();
+  }, []);
+
+  const filteredProviders = providers.filter(
     (p) =>
-      p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.tags.toLowerCase().includes(searchTerm.toLowerCase()),
+      p.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      p.tags?.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  // Booking Submit Function
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -54,10 +46,9 @@ export default function Providers() {
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", // JWT Cookie অটোমেটিক পাঠানোর জন্য
-
+        credentials: "include",
         body: JSON.stringify({
-          providerId: selectedProvider.id,
+          providerId: selectedProvider._id,
           providerName: selectedProvider.name,
           date,
           timeSlot,
@@ -68,8 +59,8 @@ export default function Providers() {
       const data = await response.json();
 
       if (response.ok) {
-        alert("🎉 Appointment Booked Successfully!");
-        setSelectedProvider(null); // Modal বন্ধ করা
+        alert("Appointment Booked Successfully!");
+        setSelectedProvider(null);
         setDate("");
         setTimeSlot("");
         setNote("");
@@ -89,7 +80,6 @@ export default function Providers() {
       <h2>Service Providers & Mentors</h2>
       <p>Search and book appointments with experts.</p>
 
-      {/* Search Input */}
       <input
         type="text"
         placeholder="Search by name or category..."
@@ -98,27 +88,31 @@ export default function Providers() {
         style={styles.searchInput}
       />
 
-      {/* Provider List Grid */}
       <div style={styles.grid}>
-        {filteredProviders.map((provider) => (
-          <div key={provider.id} style={styles.card}>
-            <h3>{provider.name}</h3>
-            <p style={styles.role}>{provider.role}</p>
-            <p style={styles.tags}>{provider.tags}</p>
-            <button
-              onClick={() => {
-                setSelectedProvider(provider);
-                setMessage("");
-              }}
-              style={styles.bookBtn}
-            >
-              Book Appointment
-            </button>
-          </div>
-        ))}
+        {filteredProviders.length > 0 ? (
+          filteredProviders.map((provider) => (
+            <div key={provider._id} style={styles.card}>
+              <h3>{provider.name}</h3>
+              <p style={styles.role}>{provider.role}</p>
+              <p style={styles.tags}>{provider.tags}</p>
+              <button
+                onClick={() => {
+                  setSelectedProvider(provider);
+                  setMessage("");
+                }}
+                style={styles.bookBtn}
+              >
+                Book Appointment
+              </button>
+            </div>
+          ))
+        ) : (
+          <p style={{ color: "#777", textAlign: "center", gridColumn: "1/-1" }}>
+            No providers found in database.
+          </p>
+        )}
       </div>
 
-      {/* Booking Modal Popup */}
       {selectedProvider && (
         <div style={styles.modalOverlay}>
           <div style={styles.modalCard}>
@@ -135,7 +129,7 @@ export default function Providers() {
                 <input
                   type="date"
                   required
-                  min={today} // 🔴 ২. পুরান তারিখ সিলেক্ট করা আটকানোর জন্য min যুক্ত করা হলো
+                  min={today}
                   value={date}
                   onChange={(e) => setDate(e.target.value)}
                   style={styles.input}
@@ -187,7 +181,6 @@ export default function Providers() {
   );
 }
 
-// Inline Styles
 const styles = {
   container: { padding: "30px", maxWidth: "900px", margin: "0 auto" },
   searchInput: {
@@ -212,7 +205,7 @@ const styles = {
     textAlign: "center",
     display: "flex",
     flexDirection: "column",
-    justifyInContent: "space-between",
+    justifyContent: "space-between",
   },
   role: { fontWeight: "600", color: "#ba92d6", margin: "5px 0" },
   tags: { fontSize: "0.85rem", color: "#777", marginBottom: "15px" },
