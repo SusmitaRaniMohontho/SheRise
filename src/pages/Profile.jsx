@@ -4,15 +4,11 @@ import { useNavigate } from "react-router-dom";
 function Profile() {
   const navigate = useNavigate();
 
-  // ১. কোনো হার্ডকোডেড ডেটা নেই, একদম ব্ল্যাঙ্ক বা ইনিশিয়াল স্টেট
   const [user, setUser] = useState({
     name: "",
     email: "",
-    role: "",
     bio: "",
     avatar: "https://cdn-icons-png.flaticon.com/512/727/727399.png",
-    enrolledCourses: 0,
-    savedJobs: 0,
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -20,46 +16,34 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // ২. পেজ লোড হওয়ার সাথে সাথে ব্যাকএন্ড থেকে ইউজারের আসল ডেটা ফেচ করা (API Connection)
+  // ১. ব্যাকএন্ডের সঠিক রাউট (/api/auth/profile) থেকে ডেটা ফেচ করা
   useEffect(() => {
     const fetchUserProfile = async () => {
-      const token = localStorage.getItem("token");
-
-      // সিকিউরিটি গার্ড: টোকেন না থাকলে লগইন পেজে রিডাইরেক্ট হবে
-      if (!token) {
-        navigate("/login");
-        return;
-      }
-
       try {
-        // ব্যাকএন্ডের প্রোফাইল রাউটে রিকোয়েস্ট পাঠানো (তোমার ব্যাকএন্ড রাউটের URL অনুযায়ী এটা বসবে)
-        const response = await fetch(
-          "http://localhost:5000/api/users/profile",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`, // JWT টোকেন পাস করা হচ্ছে
-            },
+        const response = await fetch("http://localhost:5000/api/auth/profile", {
+          method: "GET",
+          credentials: "include", // কুকি পাঠানোর জন্য অত্যন্ত জরুরি
+          headers: {
+            "Content-Type": "application/json",
           },
-        );
+        });
 
         const data = await response.json();
 
         if (response.ok) {
-          setUser(data); // ডেটাবেজ থেকে আসা রিয়েল ইউজার ডেটা সেট করা
-          setFormData(data); // এডিট ফর্মের জন্যও ডেটা সেট করে রাখা
+          setUser(data);
+          setFormData(data);
         } else {
-          setErrorMessage(data.message || "Failed to load profile data.");
+          setErrorMessage(data.error || "Failed to load profile data.");
           if (response.status === 401) {
-            // টোকেন ইনভ্যালিড বা এক্সপায়ার্ড হলে লগআউট করে দেওয়া
-            localStorage.removeItem("token");
             navigate("/login");
           }
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
-        setErrorMessage("Server connection error. Please check your backend.");
+        setErrorMessage(
+          "Server connection error. Please check if your backend is running.",
+        );
       } finally {
         setLoading(false);
       }
@@ -68,42 +52,40 @@ function Profile() {
     fetchUserProfile();
   }, [navigate]);
 
-  // ৩. প্রফেশনাল লগ-আউট হ্যান্ডলার
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    alert("Logged out successfully!");
-    navigate("/login");
-  };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
   };
 
-  // ৪. প্রোফাইল আপডেট বা এডিট করার পর ব্যাকএন্ডে পাঠানোর ফাংশন (PUT/PATCH Request)
+  // ২. ব্যাকএন্ডের সঠিক রাউট (/api/auth/profile/update) এ ডেটা পাঠানো
   const handleSave = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("http://localhost:5000/api/users/update", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        "http://localhost:5000/api/auth/profile/update",
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            bio: formData.bio,
+          }),
         },
-        body: JSON.stringify(formData),
-      });
+      );
 
       const data = await response.json();
 
       if (response.ok) {
-        setUser(data); // আপডেট হওয়া ডেটা স্টেটে সেট করা
+        setUser(data.user);
+        setFormData(data.user);
         setIsEditing(false);
         alert("Profile updated successfully in database!");
       } else {
-        alert(data.message || "Failed to update profile.");
+        alert(data.error || "Failed to update profile.");
       }
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -128,26 +110,16 @@ function Profile() {
 
   return (
     <div style={styles.pageWrapper}>
-      {/* Top Navigation Bar */}
-      <div style={styles.topBar}>
-        <button onClick={() => navigate("/home")} style={styles.backBtn}>
-          ← Back to Home
-        </button>
-        <button onClick={handleLogout} style={styles.logoutBtn}>
-          Logout 🚪
-        </button>
-      </div>
-
       <div style={styles.container}>
         {errorMessage && <div style={styles.errorBox}>{errorMessage}</div>}
 
-        {/* Profile Card Header (Dynamic Data from DB) */}
+        {/* Profile Card Header */}
         <div style={styles.profileCard}>
           <div style={styles.avatarSection}>
             <img src={user.avatar} alt="Profile Avatar" style={styles.avatar} />
             <div style={styles.userInfo}>
               <h1 style={styles.userName}>{user.name || "User Name"}</h1>
-              <p style={styles.userRole}>{user.role || "Role not set"}</p>
+              <p style={styles.userRole}>Developer / Student</p>
               <p style={styles.userEmail}>{user.email || "user@example.com"}</p>
             </div>
           </div>
@@ -162,16 +134,16 @@ function Profile() {
         {/* Stats Section */}
         <div style={styles.statsContainer}>
           <div style={styles.statBox}>
-            <h3 style={styles.statNumber}>{user.enrolledCourses || 0}</h3>
-            <p style={styles.statLabel}>Enrolled Courses</p>
-          </div>
-          <div style={styles.statBox}>
-            <h3 style={styles.statNumber}>{user.savedJobs || 0}</h3>
-            <p style={styles.statLabel}>Saved Opportunities</p>
+            <h3 style={styles.statNumber}>Active</h3>
+            <p style={styles.statLabel}>Account Status</p>
           </div>
           <div style={styles.statBox}>
             <h3 style={styles.statNumber}>Secure</h3>
-            <p style={styles.statLabel}>JWT Authenticated</p>
+            <p style={styles.statLabel}>HttpOnly Cookie Auth</p>
+          </div>
+          <div style={styles.statBox}>
+            <h3 style={styles.statNumber}>MongoDB</h3>
+            <p style={styles.statLabel}>Database Connected</p>
           </div>
         </div>
 
@@ -192,33 +164,27 @@ function Profile() {
                 />
               </div>
               <div style={styles.inputGroup}>
-                <label style={styles.label}>Email Address</label>
+                <label style={styles.label}>Email Address (Read-only)</label>
                 <input
                   type="email"
                   name="email"
                   value={formData.email}
-                  onChange={handleInputChange}
-                  style={styles.input}
-                  required
-                />
-              </div>
-              <div style={styles.inputGroup}>
-                <label style={styles.label}>Role / Title</label>
-                <input
-                  type="text"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                  style={styles.input}
+                  disabled
+                  style={{
+                    ...styles.input,
+                    backgroundColor: "#f0f0f0",
+                    cursor: "not-allowed",
+                  }}
                 />
               </div>
               <div style={styles.inputGroup}>
                 <label style={styles.label}>Bio</label>
                 <textarea
                   name="bio"
-                  value={formData.bio}
+                  value={formData.bio || ""}
                   onChange={handleInputChange}
                   style={styles.textarea}
+                  placeholder="Write something about yourself..."
                 />
               </div>
               <button type="submit" style={styles.saveBtn}>
@@ -244,35 +210,7 @@ const styles = {
   pageWrapper: {
     backgroundColor: "#f8f5fb",
     minHeight: "100vh",
-    paddingBottom: "60px",
-  },
-  topBar: {
-    maxWidth: "900px",
-    margin: "0 auto",
-    padding: "20px 20px 0 20px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  backBtn: {
-    backgroundColor: "transparent",
-    color: "#ba92d6",
-    border: "1.5px solid #ba92d6",
-    padding: "8px 16px",
-    borderRadius: "20px",
-    fontWeight: "700",
-    cursor: "pointer",
-    fontSize: "0.9rem",
-  },
-  logoutBtn: {
-    backgroundColor: "#ffebee",
-    color: "#e53e3e",
-    border: "1.5px solid #feb2b2",
-    padding: "8px 16px",
-    borderRadius: "20px",
-    fontWeight: "700",
-    cursor: "pointer",
-    fontSize: "0.9rem",
+    padding: "30px 0",
   },
   container: {
     padding: "20px",
@@ -282,12 +220,13 @@ const styles = {
   errorBox: {
     backgroundColor: "#fff0f0",
     color: "#e53e3e",
-    padding: "10px",
+    padding: "12px",
     borderRadius: "8px",
-    fontSize: "0.85rem",
-    marginBottom: "15px",
+    fontSize: "0.9rem",
+    marginBottom: "20px",
     border: "1px solid #feb2b2",
     textAlign: "center",
+    fontWeight: "600",
   },
   profileCard: {
     backgroundColor: "#ffffff",
@@ -359,7 +298,7 @@ const styles = {
   },
   statNumber: {
     margin: "0 0 5px 0",
-    fontSize: "2rem",
+    fontSize: "1.5rem",
     color: "#ba92d6",
     fontWeight: "800",
   },
