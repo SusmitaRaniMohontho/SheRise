@@ -6,26 +6,103 @@ export default function Loan() {
   const [formData, setFormData] = useState({
     name: "",
     address: "",
-    contact: "",
+    phone: "",
+    email: "",
     amount: "",
   });
 
+  const [errors, setErrors] = useState({});
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    // 🔴 1. RESTRICT INVALID CHARACTER INPUTS IN REAL-TIME
+
+    // Full Name: Allow only letters and spaces (Block numbers & special chars)
+    if (name === "name" && value !== "" && !/^[a-zA-Z\s]*$/.test(value)) {
+      return; 
+    }
+
+    // Phone Number: Allow only digits, optional leading +, spaces, and dashes
+    if (name === "phone" && value !== "" && !/^[+\d\s-]*$/.test(value)) {
+      return;
+    }
+
+    // Loan Amount: Allow only numeric digits and optional decimal point
+    if (name === "amount" && value !== "" && !/^\d*\.?\d*$/.test(value)) {
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Clear field-specific error as user types
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Validate Name
+    if (!formData.name.trim()) {
+      newErrors.name = "Full name is required.";
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = "Name must be at least 2 characters.";
+    }
+
+    // Validate Address
+    if (!formData.address.trim()) {
+      newErrors.address = "Address is required.";
+    }
+
+    // Validate Phone Number
+    const phoneDigits = formData.phone.replace(/\D/g, "");
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required.";
+    } else if (phoneDigits.length < 7 || phoneDigits.length > 15) {
+      newErrors.phone = "Phone number must be between 7 and 15 digits.";
+    }
+
+    // Validate Email Address
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email.trim()) {
+      newErrors.email = "Email address is required.";
+    } else if (!emailRegex.test(formData.email.trim())) {
+      newErrors.email = "Please enter a valid email address (e.g. user@example.com).";
+    }
+
+    // Validate Loan Amount
+    if (!formData.amount.trim()) {
+      newErrors.amount = "Loan amount is required.";
+    } else if (parseFloat(formData.amount) <= 0) {
+      newErrors.amount = "Loan amount must be greater than zero.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    const token = localStorage.getItem("token");
 
     try {
       const response = await fetch("http://localhost:5000/api/loans", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...(token && { Authorization: `Bearer ${token}` }),
         },
+        credentials: "include",
         body: JSON.stringify(formData),
       });
 
@@ -36,15 +113,17 @@ export default function Loan() {
         setFormData({
           name: "",
           address: "",
-          contact: "",
+          phone: "",
+          email: "",
           amount: "",
         });
+        setErrors({});
       } else {
         alert(data.message || "Failed to submit loan application.");
       }
     } catch (error) {
       console.error("Submission error:", error);
-      alert("Backend server connection failed! Make sure backend is running.");
+      alert("Backend server connection failed! Make sure the backend server is running.");
     }
   };
 
@@ -55,9 +134,10 @@ export default function Loan() {
           ← Back
         </button>
 
-        <h2 style={styles.title}> Financial Loans</h2>
+        <h2 style={styles.title}>Financial Loans</h2>
 
-        <form onSubmit={handleSubmit} style={styles.formCard}>
+        <form onSubmit={handleSubmit} style={styles.formCard} noValidate>
+          {/* Full Name */}
           <div style={styles.inputGroup}>
             <label htmlFor="name" style={styles.label}>
               Full Name
@@ -66,14 +146,19 @@ export default function Loan() {
               type="text"
               id="name"
               name="name"
-              placeholder="Enter your full name"
+              placeholder="e.g. Jane Doe"
               value={formData.name}
               onChange={handleChange}
-              style={styles.input}
+              style={{
+                ...styles.input,
+                borderColor: errors.name ? "#e74c3c" : "#ba92d6",
+              }}
               required
             />
+            {errors.name && <span style={styles.errorText}>{errors.name}</span>}
           </div>
 
+          {/* Address */}
           <div style={styles.inputGroup}>
             <label htmlFor="address" style={styles.label}>
               Address
@@ -85,41 +170,78 @@ export default function Loan() {
               placeholder="Enter your street address"
               value={formData.address}
               onChange={handleChange}
-              style={styles.input}
+              style={{
+                ...styles.input,
+                borderColor: errors.address ? "#e74c3c" : "#ba92d6",
+              }}
               required
             />
+            {errors.address && <span style={styles.errorText}>{errors.address}</span>}
           </div>
 
+          {/* Phone Number */}
           <div style={styles.inputGroup}>
-            <label htmlFor="contact" style={styles.label}>
-              Contact Number / Email
+            <label htmlFor="phone" style={styles.label}>
+              Phone Number
             </label>
             <input
-              type="text"
-              id="contact"
-              name="contact"
-              placeholder="Enter phone number or email"
-              value={formData.contact}
+              type="tel"
+              id="phone"
+              name="phone"
+              inputMode="tel"
+              placeholder="e.g. +1234567890"
+              value={formData.phone}
               onChange={handleChange}
-              style={styles.input}
+              style={{
+                ...styles.input,
+                borderColor: errors.phone ? "#e74c3c" : "#ba92d6",
+              }}
               required
             />
+            {errors.phone && <span style={styles.errorText}>{errors.phone}</span>}
           </div>
 
+          {/* Email Address */}
+          <div style={styles.inputGroup}>
+            <label htmlFor="email" style={styles.label}>
+              Email Address
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="e.g. user@example.com"
+              value={formData.email}
+              onChange={handleChange}
+              style={{
+                ...styles.input,
+                borderColor: errors.email ? "#e74c3c" : "#ba92d6",
+              }}
+              required
+            />
+            {errors.email && <span style={styles.errorText}>{errors.email}</span>}
+          </div>
+
+          {/* Loan Amount */}
           <div style={styles.inputGroup}>
             <label htmlFor="amount" style={styles.label}>
-              Loan Amount
+              Loan Amount ($)
             </label>
             <input
               type="text"
               id="amount"
               name="amount"
-              placeholder="Enter requested loan amount"
+              inputMode="decimal"
+              placeholder="e.g. 5000"
               value={formData.amount}
               onChange={handleChange}
-              style={styles.input}
+              style={{
+                ...styles.input,
+                borderColor: errors.amount ? "#e74c3c" : "#ba92d6",
+              }}
               required
             />
+            {errors.amount && <span style={styles.errorText}>{errors.amount}</span>}
           </div>
 
           <button type="submit" style={styles.submitBtn}>
@@ -184,6 +306,12 @@ const styles = {
     fontFamily: "inherit",
     outline: "none",
     boxSizing: "border-box",
+  },
+  errorText: {
+    color: "#e74c3c",
+    fontSize: "0.82rem",
+    marginTop: "2px",
+    fontWeight: "600",
   },
   submitBtn: {
     backgroundColor: "#ba92d6",
