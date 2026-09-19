@@ -1,18 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
   const navigate = useNavigate();
 
-  // 🔴 প্রটেকশন: অলরেডি লগইন করা থাকলে ব্রাউজারের ব্যাক বাটন বা ইউআরএল দিয়ে লগইন পেজে ঢুকতে দেবে না
-  useEffect(() => {
-    const userName = localStorage.getItem("userName");
-    if (userName) {
-      navigate("/home", { replace: true });
-    }
-  }, [navigate]);
-
-  // for mode tracking: false mean Login, true mean Sign Up
+  // false = Login mode
+  // true = Sign Up mode
   const [isSignupMode, setIsSignupMode] = useState(false);
 
   const [name, setName] = useState("");
@@ -20,50 +13,82 @@ function Login() {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
+  // ==========================================
+  // LOGIN / SIGN UP
+  // ==========================================
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
 
-    // mode wise endpoint and data select
     const endpoint = isSignupMode
       ? "http://localhost:5000/api/auth/signup"
       : "http://localhost:5000/api/auth/login";
 
     const requestBody = isSignupMode
-      ? { name, email, password }
-      : { email, password };
+      ? {
+          name,
+          email,
+          password,
+        }
+      : {
+          email,
+          password,
+        };
 
-    //request sent
     try {
       const response = await fetch(endpoint, {
         method: "POST",
+
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", // 🔴 ব্যাকএন্ড থেকে পাঠানো HttpOnly Cookie ব্রাউজারে সেভ করার জন্য অত্যন্ত জরুরি
+
+        // JWT HttpOnly cookie-এর জন্য জরুরি
+        credentials: "include",
+
         body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
 
+      // ==========================================
+      // SUCCESS
+      // ==========================================
       if (response.ok) {
+        // -------------------------
+        // SIGN UP SUCCESS
+        // -------------------------
         if (isSignupMode) {
-          console.log("সাইন-আপ সফল হয়েছে:", data);
+          console.log("Sign up successful:", data);
+
           alert("Registration successful! Please log in.");
+
+          // আবার Login mode-এ যাবে
           setIsSignupMode(false);
+
+          // আগের password clear
           setPassword("");
-        } else {
-          console.log("লগইন সফল হয়েছে:", data);
-
-          // ইউজারনেম সেভ করে রাখা যাতে রাউটিংয়ে সুবিধা হয়
-          if (data.name) {
-            localStorage.setItem("userName", data.name);
-          }
-
-          // 🔴 replace: true ব্যবহার করার ফলে ব্রাউজার হিস্টরি থেকে লগইন পেজ ওভাররাইট হয়ে যাবে
-          navigate("/home", { replace: true });
         }
-      } else {
+
+        // -------------------------
+        // LOGIN SUCCESS
+        // -------------------------
+        else {
+          console.log("Login successful:", data);
+
+          // JWT cookie already backend থেকে set হয়েছে
+          // এখানে localStorage ব্যবহার করছি না
+
+          navigate("/home", {
+            replace: true,
+          });
+        }
+      }
+
+      // ==========================================
+      // ERROR
+      // ==========================================
+      else {
         setErrorMessage(
           data.message ||
             data.error ||
@@ -72,13 +97,17 @@ function Login() {
       }
     } catch (error) {
       console.error("Connection error:", error);
+
       setErrorMessage("Server error. Please make sure the backend is running.");
     }
   };
 
-  // mode cng function
+  // ==========================================
+  // SWITCH LOGIN / SIGN UP
+  // ==========================================
   const toggleMode = () => {
     setIsSignupMode(!isSignupMode);
+
     setErrorMessage("");
     setName("");
     setEmail("");
@@ -88,10 +117,13 @@ function Login() {
   return (
     <div style={styles.pageWrapper}>
       <div style={styles.cardContainer}>
-        {/* Left Section: Branding */}
+        {/* ==========================================
+            LEFT SECTION
+        ========================================== */}
         <div style={styles.leftSection}>
           <div style={styles.brandingContent}>
             <h1 style={styles.brandTitle}>SheRise</h1>
+
             <p style={styles.brandSubtitle}>
               Empowering Women, Transforming Futures. Join our safe community
               for learning and support.
@@ -99,24 +131,34 @@ function Login() {
           </div>
         </div>
 
-        {/* Right Section: Form */}
+        {/* ==========================================
+            RIGHT SECTION
+        ========================================== */}
         <div style={styles.rightSection}>
           <form onSubmit={handleSubmit} style={styles.form} autoComplete="off">
+            {/* TITLE */}
             <h2 style={styles.formTitle}>
               {isSignupMode ? "Create Account" : "Welcome Back"}
             </h2>
+
+            {/* SUBTITLE */}
             <p style={styles.formSubtitle}>
               {isSignupMode
                 ? "Please sign up to get started"
                 : "Please log in to your account"}
             </p>
 
+            {/* ERROR MESSAGE */}
             {errorMessage && <div style={styles.errorBox}>{errorMessage}</div>}
 
-            {/* shudhu sign up holei name fieeld dekhabe */}
+            {/* ==========================================
+                NAME
+                Only visible during Sign Up
+            ========================================== */}
             {isSignupMode && (
               <div style={styles.inputGroup}>
                 <label style={styles.label}>Name</label>
+
                 <input
                   type="text"
                   placeholder="Enter your name"
@@ -128,8 +170,12 @@ function Login() {
               </div>
             )}
 
+            {/* ==========================================
+                EMAIL
+            ========================================== */}
             <div style={styles.inputGroup}>
               <label style={styles.label}>Email</label>
+
               <input
                 type="email"
                 placeholder="Enter your email"
@@ -140,8 +186,12 @@ function Login() {
               />
             </div>
 
+            {/* ==========================================
+                PASSWORD
+            ========================================== */}
             <div style={styles.inputGroup}>
               <label style={styles.label}>Password</label>
+
               <input
                 type="password"
                 placeholder="Enter your password"
@@ -152,16 +202,23 @@ function Login() {
               />
             </div>
 
+            {/* ==========================================
+                LOGIN / SIGN UP BUTTON
+            ========================================== */}
             <button type="submit" style={styles.loginBtn}>
               {isSignupMode ? "Sign Up" : "Log In"}
             </button>
 
+            {/* ==========================================
+                SWITCH BUTTON
+            ========================================== */}
             <div style={styles.registerBox}>
               <span style={styles.registerText}>
                 {isSignupMode
                   ? "Already have an account? "
                   : "Don't have an account? "}
               </span>
+
               <button
                 type="button"
                 onClick={toggleMode}
@@ -177,6 +234,10 @@ function Login() {
   );
 }
 
+// ======================================================
+// STYLES
+// ======================================================
+
 const styles = {
   pageWrapper: {
     display: "flex",
@@ -186,6 +247,7 @@ const styles = {
     backgroundColor: "#ffffff",
     padding: "20px",
   },
+
   cardContainer: {
     display: "flex",
     flexWrap: "wrap",
@@ -197,6 +259,7 @@ const styles = {
     overflow: "hidden",
     border: "1px solid #f3eafd",
   },
+
   leftSection: {
     flex: "1 1 300px",
     backgroundColor: "#ba92d6",
@@ -206,9 +269,11 @@ const styles = {
     padding: "40px",
     color: "#ffffff",
   },
+
   brandingContent: {
     textAlign: "center",
   },
+
   brandTitle: {
     fontSize: "2.8rem",
     margin: "0 0 10px 0",
@@ -216,12 +281,14 @@ const styles = {
     letterSpacing: "1px",
     color: "#ffffff",
   },
+
   brandSubtitle: {
     fontSize: "1rem",
     lineHeight: "1.5",
     color: "#ffffff",
     opacity: 0.95,
   },
+
   rightSection: {
     flex: "1 1 300px",
     padding: "40px",
@@ -230,21 +297,25 @@ const styles = {
     justifyContent: "center",
     backgroundColor: "#ffffff",
   },
+
   form: {
     width: "100%",
     maxWidth: "320px",
   },
+
   formTitle: {
     fontSize: "1.8rem",
     color: "#ba92d6",
     margin: "0 0 5px 0",
     fontWeight: "700",
   },
+
   formSubtitle: {
     fontSize: "0.9rem",
     color: "#666666",
     marginBottom: "20px",
   },
+
   errorBox: {
     backgroundColor: "#fff0f0",
     color: "#e53e3e",
@@ -255,9 +326,11 @@ const styles = {
     border: "1px solid #feb2b2",
     textAlign: "center",
   },
+
   inputGroup: {
     marginBottom: "18px",
   },
+
   label: {
     display: "block",
     fontSize: "0.85rem",
@@ -265,6 +338,7 @@ const styles = {
     marginBottom: "6px",
     fontWeight: "600",
   },
+
   input: {
     width: "100%",
     padding: "12px",
@@ -276,6 +350,7 @@ const styles = {
     boxSizing: "border-box",
     color: "#333333",
   },
+
   loginBtn: {
     width: "100%",
     padding: "12px",
@@ -289,14 +364,17 @@ const styles = {
     marginTop: "10px",
     boxShadow: "0 4px 12px rgba(186, 146, 214, 0.4)",
   },
+
   registerBox: {
     marginTop: "20px",
     textAlign: "center",
   },
+
   registerText: {
     fontSize: "0.85rem",
     color: "#666666",
   },
+
   signUpBtn: {
     background: "none",
     border: "none",

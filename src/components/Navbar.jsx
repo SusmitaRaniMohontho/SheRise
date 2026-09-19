@@ -1,28 +1,89 @@
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export default function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  // লোকাল স্টোরেজ থেকে সরাসরি ইউজারের নাম চেক করা হচ্ছে
-  const userName = localStorage.getItem("userName");
+  const [userName, setUserName] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // প্রফেশনাল লগআউট হ্যান্ডলার
+  // ==========================================
+  // CHECK LOGIN STATUS
+  // ==========================================
+  useEffect(() => {
+    const checkUserAuth = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/auth/profile", {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        console.log("Profile status:", response.status);
+
+        if (response.ok) {
+          const data = await response.json();
+
+          console.log("Logged in user:", data);
+
+          setUserName(data.name || "User");
+        } else {
+          setUserName("");
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+        setUserName("");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkUserAuth();
+  }, [location.pathname]);
+
+  // ==========================================
+  // LOGOUT
+  // ==========================================
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:5000/api/auth/logout", {
+      const response = await fetch("http://localhost:5000/api/auth/logout", {
         method: "POST",
-        credentials: "include", // কুকি ক্লিয়ার করার জন্য
+        credentials: "include",
+        cache: "no-store",
       });
-    } catch (err) {
-      console.error("Error during logout:", err);
-    } finally {
-      // লোকাল স্টোরেজ থেকে নাম রিমুভ করে সরাসরি লগইন পেজে পাঠিয়ে দেওয়া
-      localStorage.removeItem("userName");
-      navigate("/login");
+
+      console.log("Logout status:", response.status);
+
+      if (response.ok) {
+        setUserName("");
+        navigate("/login", { replace: true });
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
     }
   };
 
+  // ==========================================
+  // LOADING
+  // ==========================================
+  if (loading) {
+    return (
+      <nav
+        style={{
+          padding: "15px",
+          background: "#ba92d6",
+          color: "#fff",
+        }}
+      >
+        Loading...
+      </nav>
+    );
+  }
+
+  // ==========================================
+  // NAVBAR
+  // ==========================================
   return (
     <nav
       style={{
@@ -34,18 +95,44 @@ export default function Navbar() {
         flexWrap: "wrap",
       }}
     >
-      <div style={{ display: "flex", gap: "15px", flexWrap: "wrap" }}>
-        <Link to="/home" style={{ color: "#fff", textDecoration: "none" }}>
+      {/* LEFT SIDE */}
+      <div
+        style={{
+          display: "flex",
+          gap: "15px",
+        }}
+      >
+        <Link
+          to="/home"
+          style={{
+            color: "#fff",
+            textDecoration: "none",
+            fontWeight: "bold",
+          }}
+        >
           Home
         </Link>
       </div>
 
+      {/* RIGHT SIDE */}
       <div>
         {userName ? (
-          <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            <span style={{ color: "#fff", fontWeight: "500" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "12px",
+            }}
+          >
+            <span
+              style={{
+                color: "#fff",
+                fontWeight: "500",
+              }}
+            >
               Hi, {userName}
             </span>
+
             <button
               onClick={handleLogout}
               style={{
@@ -71,7 +158,6 @@ export default function Navbar() {
               background: "#6b46c1",
               padding: "8px 15px",
               borderRadius: "4px",
-              display: "inline-block",
             }}
           >
             Login
