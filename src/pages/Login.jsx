@@ -43,7 +43,7 @@ function Login() {
           "Content-Type": "application/json",
         },
 
-        // JWT HttpOnly cookie-এর জন্য জরুরি
+        // important for JWT HttpOnly cookie
         credentials: "include",
 
         body: JSON.stringify(requestBody),
@@ -63,10 +63,10 @@ function Login() {
 
           alert("Registration successful! Please log in.");
 
-          // আবার Login mode-এ যাবে
+          // abr Login mode-e jbe
           setIsSignupMode(false);
 
-          // আগের password clear
+          //ager password clear
           setPassword("");
         }
 
@@ -76,8 +76,7 @@ function Login() {
         else {
           console.log("Login successful:", data);
 
-          // JWT cookie already backend থেকে set হয়েছে
-          // এখানে localStorage ব্যবহার করছি না
+          // JWT cookie already backend theke set hoyeche
 
           navigate("/home", {
             replace: true,
