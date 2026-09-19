@@ -17,13 +17,13 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // ১. ব্যাকএন্ডের সঠিক রাউট (/api/auth/profile) থেকে ডেটা ফেচ করা
+  // 1.background er sothik route (/api/auth/profile) theke data fetch
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await fetch("http://localhost:5000/api/auth/profile", {
           method: "GET",
-          credentials: "include", // কুকি পাঠানোর জন্য অত্যন্ত জরুরি
+          credentials: "include", // important for cookie sending
           headers: {
             "Content-Type": "application/json",
           },
@@ -58,7 +58,7 @@ function Profile() {
     setFormData({ ...formData, [name]: value });
   };
 
-  // ২. ব্যাকএন্ডের সঠিক রাউট (/api/auth/profile/update) এ ডেটা পাঠানো
+  // 2.background er sothik route e(/api/auth/profile/update) data sent
   const handleSave = async (e) => {
     e.preventDefault();
 
