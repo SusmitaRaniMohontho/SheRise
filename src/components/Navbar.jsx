@@ -6,6 +6,11 @@ export default function Navbar() {
   const location = useLocation();
 
   const [userName, setUserName] = useState("");
+  // ==========================================
+  // VIVA HIGHLIGHT: ADMIN ROLE STATE IN NAVBAR
+  // State to track if the logged-in user has 'admin' system role.
+  // ==========================================
+  const [userRole, setUserRole] = useState("user");
   const [loading, setLoading] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
@@ -24,7 +29,7 @@ export default function Navbar() {
   }, []);
 
   // ==========================================
-  // CHECK LOGIN STATUS
+  // CHECK LOGIN STATUS & FETCH SYSTEM ROLE
   // ==========================================
   useEffect(() => {
     const checkUserAuth = async () => {
@@ -38,12 +43,16 @@ export default function Navbar() {
         if (response.ok) {
           const data = await response.json();
           setUserName(data.name || "User");
+          // Capture the systemRole from backend profile response
+          setUserRole(data.systemRole || "user");
         } else {
           setUserName("");
+          setUserRole("user");
         }
       } catch (error) {
         console.error("Auth check error:", error);
         setUserName("");
+        setUserRole("user");
       } finally {
         setLoading(false);
       }
@@ -65,6 +74,7 @@ export default function Navbar() {
 
       if (response.ok) {
         setUserName("");
+        setUserRole("user");
         navigate("/login", { replace: true });
       }
     } catch (error) {
@@ -288,19 +298,26 @@ export default function Navbar() {
                 style={{ margin: "10px 20px", borderTop: "1px solid #f0e6f7" }}
               ></div>
 
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  navigate("/admin");
-                }}
-                style={{
-                  ...sidebarItemStyle,
-                  color: "#6b46c1",
-                  fontWeight: "bold",
-                }}
-              >
-                ⚙️ Admin Dashboard
-              </button>
+              {/* ========================================== */}
+              {/* VIVA HIGHLIGHT: CONDITIONAL ADMIN SIDEBAR BUTTON */}
+              {/* Rendered ONLY if userRole is strictly 'admin'. */}
+              {/* Regular users will not see this option in the drawer. */}
+              {/* ========================================== */}
+              {userRole === "admin" && (
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate("/admin");
+                  }}
+                  style={{
+                    ...sidebarItemStyle,
+                    color: "#6b46c1",
+                    fontWeight: "bold",
+                  }}
+                >
+                  ⚙️ Admin Dashboard
+                </button>
+              )}
             </div>
           </div>
         )}

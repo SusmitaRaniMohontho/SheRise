@@ -1,10 +1,45 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import homeHeroImg from "../assets/Home-pic.jpeg";
 
 function Home() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+
+  // ==========================================
+  // VIVA HIGHLIGHT: ADMIN ROLE STATE MANAGEMENT
+  // State to store the logged-in user's system role ('admin' or 'user').
+  // Fetched securely from the backend cookie/session via /profile API.
+  // ==========================================
+  const [userRole, setUserRole] = useState("user");
+  const [loading, setLoading] = useState(true);
+
+  // Fetch logged-in user profile to check systemRole on component mount
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/auth/profile", {
+          method: "GET",
+          credentials: "include", // Required for sending/receiving HttpOnly cookies
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          // Set the systemRole received from backend (e.g., 'admin' or 'user')
+          setUserRole(data.systemRole || "user");
+        } else {
+          // If not logged in or token expired, default to regular user
+          setUserRole("user");
+        }
+      } catch (err) {
+        console.error("Failed to fetch user profile:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -190,19 +225,26 @@ function Home() {
               </div>
             </div>
 
-            <div style={styles.ecoCardSpecial}>
-              <div style={styles.cardHeaderIcon}></div>
-              <h3 style={styles.ecoTitle}>System Management</h3>
-              <p style={styles.ecoText}>
-                Administrative overview and system management panel.
-              </p>
-              <button
-                onClick={() => navigate("/admin")}
-                style={styles.specialBtn}
-              >
-                Admin Dashboard
-              </button>
-            </div>
+            {/* ========================================== */}
+            {/* VIVA HIGHLIGHT: CONDITIONAL ADMIN CARD RENDERING */}
+            {/* This card is rendered ONLY if the user's systemRole is strictly 'admin'. */}
+            {/* Regular users ('user' role) will not see this card in their UI. */}
+            {/* ========================================== */}
+            {!loading && userRole === "admin" && (
+              <div style={styles.ecoCardSpecial}>
+                <div style={styles.cardHeaderIcon}></div>
+                <h3 style={styles.ecoTitle}>System Management</h3>
+                <p style={styles.ecoText}>
+                  Administrative overview and system management panel.
+                </p>
+                <button
+                  onClick={() => navigate("/admin")}
+                  style={styles.specialBtn}
+                >
+                  Admin Dashboard
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
