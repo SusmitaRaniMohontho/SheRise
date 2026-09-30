@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export default function Navbar() {
@@ -7,6 +7,21 @@ export default function Navbar() {
 
   const [userName, setUserName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  // বাইরে ক্লিক করলে সাইডবার বন্ধ হয়ে যাওয়ার জন্য
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // ==========================================
   // CHECK LOGIN STATUS
@@ -20,13 +35,8 @@ export default function Navbar() {
           cache: "no-store",
         });
 
-        console.log("Profile status:", response.status);
-
         if (response.ok) {
           const data = await response.json();
-
-          console.log("Logged in user:", data);
-
           setUserName(data.name || "User");
         } else {
           setUserName("");
@@ -52,8 +62,6 @@ export default function Navbar() {
         credentials: "include",
         cache: "no-store",
       });
-
-      console.log("Logout status:", response.status);
 
       if (response.ok) {
         setUserName("");
@@ -87,41 +95,225 @@ export default function Navbar() {
   return (
     <nav
       style={{
-        padding: "15px",
+        padding: "12px 30px",
         background: "#ba92d6",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
-        flexWrap: "wrap",
+        position: "sticky",
+        top: 0,
+        zIndex: 1000,
+        boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
       }}
     >
-      {/* LEFT SIDE */}
+      {/* LEFT SIDE: Hamburger Menu + Brand Logo */}
       <div
         style={{
           display: "flex",
-          gap: "15px",
+          alignItems: "center",
+          gap: "20px",
         }}
+        ref={menuRef}
       >
+        {/* রিয়েল ওয়ার্ল্ড স্টাইলের হ্যামবার্গার বাটন */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "#fff",
+            fontSize: "1.6rem",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            padding: "4px 8px",
+            borderRadius: "4px",
+            transition: "background 0.2s",
+          }}
+          title="Toggle Navigation Menu"
+        >
+          ☰
+        </button>
+
+        {/* Brand / Home Link */}
         <Link
           to="/home"
           style={{
             color: "#fff",
             textDecoration: "none",
             fontWeight: "bold",
+            fontSize: "1.25rem",
+            letterSpacing: "0.5px",
           }}
         >
-          Home
+          SheRise
         </Link>
+
+        {/* ========================================================= */}
+        {/* রিয়েল-ওয়ার্ল্ড সাইডবার ড্রয়ার (হোম সহ সব পেজ সাজানো) */}
+        {/* ========================================================= */}
+        {menuOpen && (
+          <div
+            style={{
+              position: "fixed",
+              top: "0",
+              left: "0",
+              width: "280px",
+              height: "100vh",
+              backgroundColor: "#ffffff",
+              boxShadow: "5px 0 25px rgba(0, 0, 0, 0.15)",
+              padding: "20px 0",
+              display: "flex",
+              flexDirection: "column",
+              zIndex: 2000,
+              overflowY: "auto",
+              animation: "slideInLeft 0.3s ease-out",
+            }}
+          >
+            {/* সাইডবার হেডার ও ক্লোজ বাটন */}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "0 20px 15px 20px",
+                borderBottom: "1px solid #f0e6f7",
+                marginBottom: "10px",
+              }}
+            >
+              <h3 style={{ margin: 0, color: "#6b46c1", fontSize: "1.2rem" }}>
+                SheRise Menu
+              </h3>
+              <button
+                onClick={() => setMenuOpen(false)}
+                style={{
+                  background: "none",
+                  border: "none",
+                  fontSize: "1.4rem",
+                  cursor: "pointer",
+                  color: "#666",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* মেনু লিস্ট (রিয়েল ওয়ার্ল্ড রুল অনুযায়ী প্রথমে 'Home' এবং বাকী পেজগুলো) */}
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "4px" }}
+            >
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/home");
+                }}
+                style={sidebarItemStyle}
+              >
+                🏠 Home
+              </button>
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/profile");
+                }}
+                style={sidebarItemStyle}
+              >
+                👤 My Profile
+              </button>
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/loan");
+                }}
+                style={sidebarItemStyle}
+              >
+                💰 Loans & Grants
+              </button>
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/library");
+                }}
+                style={sidebarItemStyle}
+              >
+                📚 Digital Library
+              </button>
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/content");
+                }}
+                style={sidebarItemStyle}
+              >
+                💡 Content Hub
+              </button>
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/providers");
+                }}
+                style={sidebarItemStyle}
+              >
+                🤝 Service Providers
+              </button>
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/jobs");
+                }}
+                style={sidebarItemStyle}
+              >
+                💼 Jobs & Careers
+              </button>
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/sponsors");
+                }}
+                style={sidebarItemStyle}
+              >
+                ⭐ Sponsors
+              </button>
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/help");
+                }}
+                style={sidebarItemStyle}
+              >
+                ❓ Help Center
+              </button>
+
+              <div
+                style={{ margin: "10px 20px", borderTop: "1px solid #f0e6f7" }}
+              ></div>
+
+              <button
+                onClick={() => {
+                  setMenuOpen(false);
+                  navigate("/admin");
+                }}
+                style={{
+                  ...sidebarItemStyle,
+                  color: "#6b46c1",
+                  fontWeight: "bold",
+                }}
+              >
+                ⚙️ Admin Dashboard
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* RIGHT SIDE */}
+      {/* RIGHT SIDE: Profile / Login / Logout */}
       <div>
         {userName ? (
           <div
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "12px",
+              gap: "15px",
             }}
           >
             <span
@@ -156,7 +348,7 @@ export default function Navbar() {
               textDecoration: "none",
               fontWeight: "bold",
               background: "#6b46c1",
-              padding: "8px 15px",
+              padding: "8px 18px",
               borderRadius: "4px",
             }}
           >
@@ -167,3 +359,17 @@ export default function Navbar() {
     </nav>
   );
 }
+
+// সাইডবার ড্রয়ারের অপশনগুলোর ডিজাইন স্টাইল
+const sidebarItemStyle = {
+  background: "none",
+  border: "none",
+  padding: "12px 20px",
+  textAlign: "left",
+  width: "100%",
+  fontSize: "0.95rem",
+  color: "#333",
+  cursor: "pointer",
+  transition: "background 0.2s, color 0.2s",
+  fontWeight: "500",
+};
