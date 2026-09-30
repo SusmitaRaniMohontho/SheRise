@@ -1,82 +1,74 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function EducationalContent() {
-  // 1. Digital Library-er moto same React Router navigate function
   const navigate = useNavigate();
 
-  // 2. Active category filter state
+  const [articles, setArticles] = useState([]);
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
-
-  // 3. Kon article-ta open thakbe seta track korar state
   const [activeArticle, setActiveArticle] = useState(null);
 
-  // 4. Quiz answer state (User kon option select korce)
-  const [selectedQuizOption, setSelectedQuizOption] = useState(null);
-
-  // 5. Category list
-  const categories = ["All", "Tech & Coding", "Job Prep", "Financial Literacy"];
-
-  // 6. Articles Data List
-  const articles = [
-    {
-      id: 1,
-      category: "Tech & Coding",
-      title: "HTML & CSS Basics for Women in Tech",
-      readTime: "3 min read",
-      summary:
-        "Learn how web pages are structured and styled using simple tags.",
-      fullContent:
-        "HTML is the skeleton of a website and CSS is the design.\n1. HTML uses tags like <h1>, <p> and <div>.\n2. CSS controls colors, fonts and page layouts.\n3. Practice daily to build your first portfolio site!",
-    },
-    {
-      id: 2,
-      category: "Job Prep",
-      title: "How to Write an Effective Resume",
-      readTime: "4 min read",
-      summary:
-        "Essential rules for creating a resume that gets you hired fast.",
-      fullContent:
-        "Keep your CV clean and focused:\n1. Limit to 1-2 pages maximum.\n2. Mention relevant skills and projects first.\n3. Proofread for grammar and clarity.",
-    },
-    {
-      id: 3,
-      category: "Financial Literacy",
-      title: "Smart Savings and Investment Tips",
-      readTime: "3 min read",
-      summary: "Simple steps for women to manage personal budget and savings.",
-      fullContent:
-        "Managing money is easy with these steps:\n1. Follow the 50/30/20 budget rule.\n2. Save 20% of income for emergency funds.\n3. Explore small investments early.",
-    },
+  const categories = [
+    "All",
+    "Tech & Coding",
+    "Job Prep",
+    "Financial Literacy",
+    "Mental Health / Self-care",
   ];
 
-  // 7. Simple Quiz Data
-  const quiz = {
-    question: "What is the recommended maximum length for a beginner resume?",
-    options: ["1-2 Pages", "4-5 Pages", "10 Pages"],
-    correct: "1-2 Pages",
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [articlesRes, booksRes] = await Promise.all([
+          fetch("http://localhost:5000/api/articles", {
+            credentials: "include",
+          }),
+          fetch("http://localhost:5000/api/books", { credentials: "include" }),
+        ]);
 
-  // 8. Category Filter Logic
-  const filteredArticles =
-    selectedCategory === "All"
-      ? articles
-      : articles.filter((item) => item.category === selectedCategory);
+        // 🔒 Check if unauthorized (Not logged in)
+        if (articlesRes.status === 401 || booksRes.status === 401) {
+          alert("Please log in first to access this page.");
+          navigate("/login");
+          return;
+        }
+
+        const articlesData = await articlesRes.json();
+        const booksData = await booksRes.json();
+
+        setArticles(articlesData);
+        setBooks(booksData);
+      } catch (error) {
+        console.error("Error fetching content:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: "center", padding: "50px", color: "#666" }}>
+        Loading Content...
+      </div>
+    );
+  }
 
   return (
     <div style={containerStyle}>
-      {/* Back Button */}
       <button style={backBtn} onClick={() => navigate("/home")}>
         ← Back to Home
       </button>
 
-      {/* Page Title & Description */}
-      <h1 style={headingStyle}> Educational Content</h1>
+      <h1 style={headingStyle}>Content</h1>
       <p style={subtitleStyle}>
-        Read short career guides and test your knowledge with quick quizzes.
+        Read short career guides and access free digital learning books.
       </p>
 
-      {/* Category Filter Buttons */}
       <div style={categoryContainerStyle}>
         {categories.map((cat, index) => (
           <button
@@ -96,93 +88,111 @@ export default function EducationalContent() {
         ))}
       </div>
 
-      {/* Articles Section */}
+      {/* 1. ARTICLES SECTION */}
       <div style={sectionStyle}>
-        <h2 style={subHeadingStyle}> Short Reading Modules</h2>
-        <div style={gridStyle}>
-          {filteredArticles.map((article) => (
-            <div key={article.id} style={cardStyle}>
-              <div>
-                <span style={tagStyle}>{article.category}</span>
-                <span style={timeStyle}>{article.readTime}</span>
-                <h3 style={titleStyle}>{article.title}</h3>
-                <p style={descStyle}>{article.summary}</p>
-              </div>
+        <h2 style={subHeadingStyle}>📝 Short Articles</h2>
 
-              {/* Read Article Button */}
-              <button
-                style={actionBtn}
-                onClick={() =>
-                  setActiveArticle(
-                    activeArticle === article.id ? null : article.id,
-                  )
-                }
-              >
-                {activeArticle === article.id
-                  ? "Close Article"
-                  : "Read Article"}
-              </button>
+        {articles.length === 0 ? (
+          <p style={emptyMsgStyle}>No articles found.</p>
+        ) : (
+          <div style={gridStyle}>
+            {articles
+              .filter(
+                (item) =>
+                  selectedCategory === "All" ||
+                  item.category === selectedCategory,
+              )
+              .map((article) => {
+                const articleId = article._id || article.id;
+                return (
+                  <div key={articleId} style={cardStyle}>
+                    <div>
+                      <span style={tagStyle}>{article.category}</span>
+                      <span style={timeStyle}>{article.readTime}</span>
+                      <h3 style={titleStyle}>{article.title}</h3>
+                      <p style={descStyle}>{article.summary}</p>
+                    </div>
 
-              {/* Article Content Dropdown */}
-              {activeArticle === article.id && (
-                <div style={articleContentStyle}>
-                  <p style={{ whiteSpace: "pre-line", margin: 0 }}>
-                    {article.fullContent}
-                  </p>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+                    <button
+                      style={actionBtn}
+                      onClick={() =>
+                        setActiveArticle(
+                          activeArticle === articleId ? null : articleId,
+                        )
+                      }
+                    >
+                      {activeArticle === articleId
+                        ? "Close Article"
+                        : "Read Article"}
+                    </button>
+
+                    {activeArticle === articleId && (
+                      <div style={articleContentStyle}>
+                        <p style={{ whiteSpace: "pre-line", margin: 0 }}>
+                          {article.fullContent}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+          </div>
+        )}
       </div>
 
-      {/* Quick Skill Quiz Section */}
+      {/* 2. DIGITAL LIBRARY BOOKS SECTION */}
       <div style={sectionStyle}>
-        <h2 style={subHeadingStyle}> Quick Knowledge Check</h2>
-        <div style={quizBoxStyle}>
-          <h3 style={quizQuestionStyle}>{quiz.question}</h3>
+        <h2 style={subHeadingStyle}>📖 Digital Books Library</h2>
 
-          {/* Options Buttons */}
-          <div style={optionsContainerStyle}>
-            {quiz.options.map((option, idx) => (
-              <button
-                key={idx}
-                onClick={() => setSelectedQuizOption(option)}
-                style={{
-                  ...optionBtnStyle,
-                  backgroundColor:
-                    selectedQuizOption === option ? "#ba92d6" : "#ffffff",
-                  color: selectedQuizOption === option ? "#ffffff" : "#333333",
-                }}
-              >
-                {option}
-              </button>
-            ))}
+        {books.length === 0 ? (
+          <p style={emptyMsgStyle}>No books found.</p>
+        ) : (
+          <div style={gridStyle}>
+            {books
+              .filter(
+                (item) =>
+                  selectedCategory === "All" ||
+                  item.category === selectedCategory,
+              )
+              .map((book) => {
+                const bookId = book._id || book.id;
+                return (
+                  <div key={bookId} style={cardStyle}>
+                    <div>
+                      <span style={tagStyle}>{book.category}</span>
+                      <span style={timeStyle}>{book.type || "PDF Book"}</span>
+                      <h3 style={titleStyle}>{book.title}</h3>
+                      <p
+                        style={{
+                          ...descStyle,
+                          fontStyle: "italic",
+                          marginBottom: "6px",
+                        }}
+                      >
+                        Author: {book.author}
+                      </p>
+                      <p style={descStyle}>{book.description}</p>
+                    </div>
+
+                    <a
+                      href={book.pdfLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={bookLinkBtn}
+                    >
+                      Read Book 🔗
+                    </a>
+                  </div>
+                );
+              })}
           </div>
-
-          {/* Quiz Result Message */}
-          {selectedQuizOption && (
-            <div
-              style={{
-                ...resultBoxStyle,
-                backgroundColor:
-                  selectedQuizOption === quiz.correct ? "#e8f5e9" : "#ffebee",
-                color:
-                  selectedQuizOption === quiz.correct ? "#2e7d32" : "#c62828",
-              }}
-            >
-              {selectedQuizOption === quiz.correct
-                ? " Correct Answer! Great job."
-                : " Wrong Answer! Try again."}
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
 }
 
-//  CSS Styling Objects
+// CSS Styles
 const containerStyle = {
   padding: "40px 20px",
   maxWidth: "850px",
@@ -190,7 +200,6 @@ const containerStyle = {
   textAlign: "center",
   backgroundColor: "#ffffff",
 };
-
 const backBtn = {
   background: "none",
   border: "none",
@@ -200,27 +209,23 @@ const backBtn = {
   marginBottom: "20px",
   fontSize: "15px",
 };
-
 const headingStyle = {
   color: "#ba92d6",
   fontSize: "32px",
   marginBottom: "8px",
 };
-
 const subtitleStyle = {
   color: "#666666",
   marginBottom: "25px",
   fontSize: "15px",
 };
-
 const categoryContainerStyle = {
   display: "flex",
-  justify: "center",
+  justifyContent: "center",
   flexWrap: "wrap",
   gap: "10px",
   marginBottom: "35px",
 };
-
 const categoryChipStyle = {
   padding: "8px 16px",
   borderRadius: "20px",
@@ -229,12 +234,7 @@ const categoryChipStyle = {
   fontSize: "13px",
   fontWeight: "bold",
 };
-
-const sectionStyle = {
-  marginBottom: "40px",
-  textAlign: "left",
-};
-
+const sectionStyle = { marginBottom: "40px", textAlign: "left" };
 const subHeadingStyle = {
   color: "#ba92d6",
   fontSize: "20px",
@@ -242,15 +242,12 @@ const subHeadingStyle = {
   borderBottom: "2px solid rgba(186, 146, 214, 0.3)",
   paddingBottom: "8px",
 };
-
-// align-items flex-start add kora hoyeche jeno khali card stretch na hoy
 const gridStyle = {
   display: "grid",
   gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
   gap: "20px",
   alignItems: "flex-start",
 };
-
 const cardStyle = {
   backgroundColor: "#ffffff",
   padding: "20px",
@@ -258,8 +255,9 @@ const cardStyle = {
   border: "1px solid #ba92d6",
   display: "flex",
   flexDirection: "column",
+  justifyContent: "space-between",
+  minHeight: "200px",
 };
-
 const tagStyle = {
   backgroundColor: "rgba(186, 146, 214, 0.15)",
   color: "#ba92d6",
@@ -269,25 +267,18 @@ const tagStyle = {
   fontWeight: "bold",
   marginRight: "8px",
 };
-
-const timeStyle = {
-  fontSize: "12px",
-  color: "#888888",
-};
-
+const timeStyle = { fontSize: "12px", color: "#888888" };
 const titleStyle = {
   margin: "12px 0 6px 0",
   color: "#333333",
   fontSize: "17px",
 };
-
 const descStyle = {
   fontSize: "13px",
   color: "#666666",
   lineHeight: "1.4",
   marginBottom: "15px",
 };
-
 const actionBtn = {
   padding: "8px 12px",
   backgroundColor: "#ba92d6",
@@ -299,7 +290,18 @@ const actionBtn = {
   fontSize: "13px",
   alignSelf: "flex-start",
 };
-
+const bookLinkBtn = {
+  display: "inline-block",
+  padding: "8px 12px",
+  backgroundColor: "#ba92d6",
+  color: "#ffffff",
+  borderRadius: "8px",
+  textDecoration: "none",
+  fontWeight: "bold",
+  fontSize: "13px",
+  alignSelf: "flex-start",
+  marginTop: "10px",
+};
 const articleContentStyle = {
   marginTop: "15px",
   padding: "12px",
@@ -309,40 +311,8 @@ const articleContentStyle = {
   color: "#444444",
   lineHeight: "1.5",
 };
-
-const quizBoxStyle = {
-  border: "1px solid #ba92d6",
-  borderRadius: "12px",
-  padding: "20px",
-  backgroundColor: "#ffffff",
-};
-
-const quizQuestionStyle = {
-  margin: "0 0 15px 0",
-  fontSize: "16px",
-  color: "#333333",
-};
-
-const optionsContainerStyle = {
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "10px",
-  marginBottom: "15px",
-};
-
-const optionBtnStyle = {
-  padding: "10px 16px",
-  border: "1px solid #ba92d6",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontWeight: "bold",
-  fontSize: "13px",
-};
-
-const resultBoxStyle = {
-  padding: "12px",
-  borderRadius: "8px",
-  fontWeight: "bold",
+const emptyMsgStyle = {
+  color: "#888888",
   fontSize: "14px",
-  textAlign: "center",
+  fontStyle: "italic",
 };
