@@ -5,6 +5,11 @@ import homeHeroImg from "../assets/Home-pic.jpeg";
 function Home() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(false);
+  }, []);
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -14,6 +19,22 @@ function Home() {
       navigate("/search");
     }
   };
+
+  if (loading) {
+    return (
+      <div
+        style={{
+          textAlign: "center",
+          marginTop: "100px",
+          color: "#ba92d6",
+          fontSize: "1.2rem",
+          fontWeight: "700",
+        }}
+      >
+        Loading Home...
+      </div>
+    );
+  }
 
   return (
     <div style={styles.pageWrapper}>
