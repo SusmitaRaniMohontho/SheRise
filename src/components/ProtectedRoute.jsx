@@ -1,77 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
-// গ্লোবাল ক্যাশ (অন্য ফাইল থেকে ব্যবহারের জন্য export করা হলো)
-export let isGloballyAuthenticated = false;
-
-export default function ProtectedRoute() {
-  const [authStatus, setAuthStatus] = useState(
-    isGloballyAuthenticated ? "authorized" : "checking",
-  );
+const ProtectedRoute = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
-    // যদি অলরেডি অথেন্টিকেটেড থাকে, তবে বারবার ফেচ করার দরকার নেই
-    if (isGloballyAuthenticated) {
-      setAuthStatus("authorized");
-      return;
-    }
-
-    let isMounted = true;
-
-    const verifyCookieAuth = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/api/auth/profile", {
-          method: "GET",
-          credentials: "include",
-          cache: "no-store",
-        });
-
-        if (!isMounted) return;
-
-        if (response.ok) {
-          isGloballyAuthenticated = true; // ক্যাশ সেভ করলাম
-          setAuthStatus("authorized");
+    // ব্যাকএন্ডে কুকি সহ রিকোয়েস্ট পাঠিয়ে সেশন চেক করা
+    fetch("http://localhost:5000/api/auth/profile", {
+      method: "GET",
+      credentials: "include", // HttpOnly কুকি পাঠানোর জন্য অত্যন্ত জরুরি[span_1](start_span)[span_1](end_span)
+    })
+      .then((res) => {
+        if (res.ok) {
+          setIsAuthenticated(true);
         } else {
-          isGloballyAuthenticated = false;
-          setAuthStatus("unauthorized");
+          setIsAuthenticated(false);
         }
-      } catch (error) {
-        if (isMounted) {
-          isGloballyAuthenticated = false;
-          setAuthStatus("unauthorized");
-        }
-      }
-    };
-
-    verifyCookieAuth();
-
-    return () => {
-      isMounted = false;
-    };
+      })
+      .catch(() => {
+        setIsAuthenticated(false);
+      });
   }, []);
 
-  if (authStatus === "checking") {
+  // কুকি চেক হওয়ার আগ পর্যন্ত লোডিং দেখাবে
+  if (isAuthenticated === null) {
     return (
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-          backgroundColor: "#f9f6fc",
-          color: "#6b46c1",
-          fontSize: "1.1rem",
-          fontWeight: "600",
-        }}
-      >
+      <div style={{ textAlign: "center", marginTop: "50px", fontSize: "18px" }}>
         Loading...
       </div>
     );
   }
 
-  if (authStatus === "unauthorized") {
-    return <Navigate to="/login" replace={true} />;
-  }
+  // লগইন করা থাকলে ভেতরের পেজ দেখাবে, না থাকলে লগইন পেজে পাঠিয়ে দেবে
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
+};
 
-  return <Outlet />;
-}
+export default ProtectedRoute;

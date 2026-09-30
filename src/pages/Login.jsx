@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
@@ -12,6 +12,38 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  // ==========================================
+  // CHECK ALREADY LOGGED IN USER
+  // ==========================================
+  useEffect(() => {
+    let isMounted = true;
+
+    const checkExistingAuth = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/auth/profile", {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        if (!isMounted) return;
+
+        // Jodi user age thekei login thake (cookie valid hoy), tobe login page-e thakte dibe na
+        if (response.ok) {
+          navigate("/home", { replace: true });
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+      }
+    };
+
+    checkExistingAuth();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [navigate]);
 
   // ==========================================
   // LOGIN / SIGN UP
@@ -355,7 +387,7 @@ const styles = {
     padding: "12px",
     backgroundColor: "#ba92d6",
     color: "#ffffff",
-    border: "none",
+    border: "1px solid #ba92d6",
     borderRadius: "8px",
     fontSize: "1rem",
     fontWeight: "600",

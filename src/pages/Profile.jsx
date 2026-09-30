@@ -17,7 +17,25 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // 1.background er sothik route (/api/auth/profile) theke data fetch
+  // গ্লোবাল ব্যাক বাটন হ্যান্ডেল করার জন্য (প্রোফাইল থেকে সরাসরি হোম পেজে আসার জন্য)
+  useEffect(() => {
+    // হিস্ট্রিতে একটা স্টেট পুশ করে রাখা যাতে ব্যাক বাটনের ফ্লো ঠিক থাকে
+    window.history.pushState({ page: "profile" }, "", window.location.href);
+
+    const handlePopState = (event) => {
+      event.preventDefault();
+      // ব্যাক বাটনে ক্লিক করলেই সোজা হোম পেজে নিয়ে যাবে
+      navigate("/home", { replace: true });
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [navigate]);
+
+  // 1. background er sothik route (/api/auth/profile) theke data fetch
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -58,7 +76,7 @@ function Profile() {
     setFormData({ ...formData, [name]: value });
   };
 
-  // 2.background er sothik route e(/api/auth/profile/update) data sent
+  // 2. background er sothik route e (/api/auth/profile/update) data sent
   const handleSave = async (e) => {
     e.preventDefault();
 

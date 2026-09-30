@@ -3,7 +3,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import ProtectedRoute from "./components/ProtectedRoute";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
@@ -18,6 +17,7 @@ import Jobs from "./pages/Jobs";
 import Sponsors from "./pages/Sponsors";
 import Loan from "./pages/Loan";
 import AdminDashboard from "./pages/AdminDashboard";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -26,16 +26,16 @@ function App() {
 
       <main>
         <Routes>
-          {/* Root URL */}
-          <Route path="/" element={<Navigate to="/home" replace />} />
+          {/* রুট ইউআরএল */}
+          <Route path="/" element={<Navigate to="/login" replace />} />
 
-          {/* Public Routes (এখানে হোম পেজ একদম পাবলিক রাখা হলো, লগইন ছাড়াও দেখা যাবে) */}
-          <Route path="/home" element={<Home />} />
+          {/* পাবলিক পেজ */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/search" element={<Search />} />
 
-          {/* Protected Routes (বাকি সব পেজগুলো প্রটেক্টেড থাকবে) */}
+          {/* প্রটেক্টেড রুটস (যেগুলোতে শুধু লগইন করা ইউজাররা ঢুকতে পারবে) */}
           <Route element={<ProtectedRoute />}>
             <Route path="/profile" element={<Profile />} />
             <Route path="/content" element={<Content />} />
@@ -47,6 +47,9 @@ function App() {
             <Route path="/loan" element={<Loan />} />
             <Route path="/admin" element={<AdminDashboard />} />
           </Route>
+
+          {/* কোনো ভুল ইউআরএলে গেলে */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </main>
 
