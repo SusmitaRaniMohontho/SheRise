@@ -1,34 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import homeHeroImg from "../assets/Home-pic.jpeg";
 
 function Home() {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [allItems, setAllItems] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const searchRef = useRef(null);
 
   // ==========================================
-  // VIVA HIGHLIGHT: ADMIN ROLE STATE MANAGEMENT
-  // State to store the logged-in user's system role ('admin' or 'user').
-  // Fetched securely from the backend cookie/session via /profile API.
+  // ADMIN ROLE STATE MANAGEMENT
   // ==========================================
   const [userRole, setUserRole] = useState("user");
   const [loading, setLoading] = useState(true);
 
-  // Fetch logged-in user profile to check systemRole on component mount
+  // ১. ইউজার প্রোফাইল থেকে রোল চেক করা
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
         const response = await fetch("http://localhost:5000/api/auth/profile", {
           method: "GET",
-          credentials: "include", // Required for sending/receiving HttpOnly cookies
+          credentials: "include",
         });
 
         if (response.ok) {
           const data = await response.json();
-          // Set the systemRole received from backend (e.g., 'admin' or 'user')
           setUserRole(data.systemRole || "user");
         } else {
-          // If not logged in or token expired, default to regular user
           setUserRole("user");
         }
       } catch (err) {
@@ -41,13 +41,108 @@ function Home() {
     fetchUserProfile();
   }, []);
 
+  // ২. সার্চের জন্য সব কন্টেন্ট, প্রোভাইডার এবং FAQ সঠিকভাবে ফেচ করা
+  useEffect(() => {
+    const fetchSearchData = async () => {
+      try {
+        const [articlesRes, booksRes, providersRes, faqsRes] =
+          await Promise.all([
+            axios
+              .get("http://localhost:5000/api/articles", {
+                withCredentials: true,
+              })
+              .catch(() => ({ data: [] })),
+            axios
+              .get("http://localhost:5000/api/books", { withCredentials: true })
+              .catch(() => ({ data: [] })),
+            axios
+              .get("http://localhost:5000/api/providers", {
+                withCredentials: true,
+              })
+              .catch(() => ({ data: [] })),
+            axios
+              .get("http://localhost:5000/api/help/faqs", {
+                withCredentials: true,
+              })
+              .catch(() => ({ data: [] })),
+          ]);
+
+        const articles = (articlesRes.data || []).map((item) => ({
+          ...item,
+          type: "Article",
+          searchTitle: item.title,
+        }));
+        const books = (booksRes.data || []).map((item) => ({
+          ...item,
+          type: "Book",
+          searchTitle: item.title,
+        }));
+        const providers = (providersRes.data || []).map((item) => ({
+          ...item,
+          type: "Provider",
+          searchTitle: item.name,
+        }));
+
+        // FAQ এর প্রশ্নগুলো সঠিকভাবে ম্যাপ করা
+        const rawFaqs = faqsRes.data;
+        const faqList = Array.isArray(rawFaqs)
+          ? rawFaqs
+          : rawFaqs?.data || rawFaqs?.faqs || [];
+
+        const faqs = faqList.map((item) => ({
+          ...item,
+          type: "FAQ",
+          searchTitle: item.question || item.title,
+        }));
+
+        setAllItems([...articles, ...books, ...providers, ...faqs]);
+      } catch (err) {
+        console.error("Error fetching search items:", err);
+      }
+    };
+
+    fetchSearchData();
+  }, []);
+
+  // ৩. বাইরে ক্লিক করলে ড্রপডাউন বন্ধ করার জন্য
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // ৪. ফিল্টারিং: টাইটেলের যেকোনো শব্দের শুরু (Word Boundary) থেকে ম্যাচ করলে আসবে
+  const trimmedQuery = searchQuery.trim().toLowerCase();
+  const suggestions = trimmedQuery
+    ? allItems
+        .filter((item) => {
+          const title = (item.searchTitle || "").toLowerCase();
+          const regex = new RegExp(`\\b${trimmedQuery}`, "i");
+          return regex.test(title);
+        })
+        .slice(0, 8)
+    : [];
+
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
-    } else {
-      navigate("/search");
+    setShowDropdown(false);
+
+    // কুয়েরি খালি থাকলে সার্চ পেজে যাবে না (প্রফেশনাল বিহেভিয়ার)
+    if (!searchQuery.trim()) {
+      return;
     }
+
+    navigate(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+  };
+
+  const handleSelectSuggestion = (item) => {
+    setSearchQuery(item.searchTitle);
+    setShowDropdown(false);
+    navigate(`/search?q=${encodeURIComponent(item.searchTitle)}`);
   };
 
   return (
@@ -75,9 +170,9 @@ function Home() {
         </div>
       </div>
 
-      {/* 2. Standalone Search Section */}
+      {/* 2. Standalone Search Section with Dropdown */}
       <div style={styles.searchSectionWrapper}>
-        <div style={styles.searchContainer}>
+        <div style={styles.searchContainer} ref={searchRef}>
           <h3 style={styles.searchPromptText}>
             What are you looking for today?
           </h3>
@@ -86,13 +181,35 @@ function Home() {
               type="text"
               placeholder="Search courses, jobs, loans, mentors, or support..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setShowDropdown(true);
+              }}
+              onFocus={() => setShowDropdown(true)}
               style={styles.heroSearchInput}
             />
             <button type="submit" style={styles.heroSearchBtn}>
               Search
             </button>
           </form>
+
+          {/* ড্রপডাউন সাজেশন বক্স */}
+          {showDropdown && suggestions.length > 0 && (
+            <ul style={styles.dropdownStyle}>
+              {suggestions.map((item, index) => (
+                <li
+                  key={item._id || index}
+                  style={styles.dropdownItemStyle}
+                  onClick={() => handleSelectSuggestion(item)}
+                >
+                  <span style={styles.suggestionBadge(item.type)}>
+                    {item.type}
+                  </span>
+                  <span>{item.searchTitle}</span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       </div>
 
@@ -221,7 +338,7 @@ function Home() {
             {/* Conditional Admin Card Rendering */}
             {!loading && userRole === "admin" && (
               <div style={styles.ecoCardSpecial}>
-                <div style={styles.cardHeaderIcon}>⚙️</div>
+                <div style={styles.cardHeaderIcon}>⚙️️</div>
                 <h3 style={styles.ecoTitle}>System Management</h3>
                 <p style={styles.ecoText}>
                   Administrative overview and system management panel.
@@ -299,7 +416,7 @@ const styles = {
     boxSizing: "border-box",
   },
   heroTitle: {
-    fontSize: "clamp(1.8rem, 5vw, 3.6rem)", // Screen size sadhe auto match korbe
+    fontSize: "clamp(1.8rem, 5vw, 3.6rem)",
     fontWeight: "800",
     marginBottom: "15px",
     lineHeight: "1.2",
@@ -327,6 +444,7 @@ const styles = {
     margin: "0 auto",
     textAlign: "center",
     width: "100%",
+    position: "relative",
   },
   searchPromptText: {
     color: "#ba92d6",
@@ -343,6 +461,7 @@ const styles = {
     border: "1.5px solid #ba92d6",
     width: "100%",
     boxSizing: "border-box",
+    position: "relative",
   },
   heroSearchInput: {
     flex: 1,
@@ -363,6 +482,46 @@ const styles = {
     fontSize: "0.95rem",
     fontWeight: "700",
     cursor: "pointer",
+  },
+  dropdownStyle: {
+    position: "absolute",
+    top: "calc(100% + 5px)",
+    left: "10px",
+    right: "10px",
+    backgroundColor: "#ffffff",
+    border: "1.5px solid #ba92d6",
+    borderRadius: "16px",
+    listStyle: "none",
+    margin: 0,
+    padding: "6px 0",
+    zIndex: 1000,
+    boxShadow: "0 10px 25px rgba(186, 146, 214, 0.2)",
+    textAlign: "left",
+  },
+  dropdownItemStyle: {
+    padding: "12px 18px",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    borderBottom: "1px solid #f8f5fb",
+    fontSize: "0.95rem",
+    color: "#333333",
+  },
+  suggestionBadge: (type) => {
+    let color = "#ba92d6";
+    if (type === "Book") color = "#4a90e2";
+    if (type === "Provider") color = "#f39c12";
+    if (type === "FAQ") color = "#27ae60";
+
+    return {
+      fontSize: "0.75rem",
+      backgroundColor: `${color}22`,
+      color: color,
+      padding: "3px 8px",
+      borderRadius: "6px",
+      fontWeight: "750",
+    };
   },
   sectionContainer: {
     padding: "40px 15px",
@@ -475,7 +634,7 @@ const styles = {
     gap: "8px",
   },
   ecoBtn: {
-    flex: 1,
+    flex: "1",
     backgroundColor: "#ffffff",
     color: "#ba92d6",
     border: "1.5px solid #ba92d6",
