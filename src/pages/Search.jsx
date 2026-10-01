@@ -13,14 +13,24 @@ export default function Search() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeArticle, setActiveArticle] = useState(null);
   const [openFaq, setOpenFaq] = useState(null);
+
+  // সরাসরি সার্চ পেজেই বুকিং মোডাল দেখানোর জন্য স্টেটসমূহ
+  const [selectedProvider, setSelectedProvider] = useState(null);
+  const [date, setDate] = useState("");
+  const [timeSlot, setTimeSlot] = useState("");
+  const [note, setNote] = useState("");
+  const [message, setMessage] = useState("");
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const today = new Date().toISOString().split("T")[0];
+
   const searchRef = useRef(null);
 
-  // URL-er query sink kora
+  // URL-এর কুয়েরি পরিবর্তন হলে স্টেট সিঙ্ক করা
   useEffect(() => {
     setQuery(queryParam);
   }, [queryParam]);
 
-  // Data fetch kora
+  // ডেটা ফেচ করা
   useEffect(() => {
     const fetchSearchData = async () => {
       try {
@@ -83,7 +93,7 @@ export default function Search() {
     fetchSearchData();
   }, []);
 
-  // Dropdown baire click korle bondho hobe
+  // বাইরে ক্লিক করলে ড্রপডাউন বন্ধ করা
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -94,7 +104,7 @@ export default function Search() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // --- Nikhut ebong Sothik Matching Logic (Home & Search page er jonno ek) ---
+  // নিখুঁত ম্যাচিং লজিক
   const checkMatch = (titleText, queryText) => {
     if (!queryText.trim()) return false;
     const qWords = queryText.trim().toLowerCase().split(/\s+/).filter(Boolean);
@@ -103,7 +113,6 @@ export default function Search() {
       .split(/\s+/)
       .filter(Boolean);
 
-    // Proti ti search word kono na kono title word er shuru (starts with) hote hobe
     return qWords.every((qWord) =>
       titleWords.some((tWord) => tWord.startsWith(qWord)),
     );
@@ -116,7 +125,6 @@ export default function Search() {
       ? []
       : allItems.filter((item) => checkMatch(item.searchTitle, trimmedQuery));
 
-  // Dropdown suggestion logic (Home er moto thik kora holo)
   const suggestions = trimmedQuery
     ? allItems
         .filter((item) => checkMatch(item.searchTitle, trimmedQuery))
@@ -137,6 +145,38 @@ export default function Search() {
     navigate(`/search?q=${encodeURIComponent(item.searchTitle)}`);
   };
 
+  // সার্চ পেজ থেকেই সরাসরি অ্যাপয়েন্টমেন্ট সাবমিট করার ফাংশন
+  const handleBookingSubmit = async (e) => {
+    e.preventDefault();
+    setMessage("");
+    setBookingLoading(true);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/appointments",
+        {
+          providerId: selectedProvider._id || selectedProvider.id,
+          providerName: selectedProvider.name || selectedProvider.searchTitle,
+          date,
+          timeSlot,
+          note,
+        },
+        { withCredentials: true },
+      );
+
+      alert("Appointment Booked Successfully!");
+      setSelectedProvider(null);
+      setDate("");
+      setTimeSlot("");
+      setNote("");
+    } catch (err) {
+      console.error(err);
+      setMessage(err.response?.data?.error || "Failed to book appointment");
+    } finally {
+      setBookingLoading(false);
+    }
+  };
+
   return (
     <div style={containerStyle}>
       <button style={backBtn} onClick={() => navigate("/home")}>
@@ -148,7 +188,7 @@ export default function Search() {
         Search across articles, books, service providers, and FAQs instantly.
       </p>
 
-      {/* Search Box and Dropdown */}
+      {/* সার্চ বক্স এবং ড্রপডাউন */}
       <div style={searchContainerStyle} ref={searchRef}>
         <form onSubmit={handleSearchSubmit} style={inputWrapperStyle}>
           <input
@@ -183,7 +223,7 @@ export default function Search() {
         )}
       </div>
 
-      {/* Search Results Section */}
+      {/* সার্চ রেজাল্ট সেকশন */}
       {trimmedQuery !== "" && (
         <div style={sectionStyle}>
           <h2 style={subHeadingStyle}>📌 Search Results for "{query}"</h2>
@@ -250,9 +290,13 @@ export default function Search() {
                       </>
                     )}
 
+                    {/* প্রোভাইডার হলে সরাসরি সার্চ পেজেই বুকিং মোডাল ওপেন হবে */}
                     {item.type === "Provider" && (
                       <button
-                        onClick={() => navigate("/providers")}
+                        onClick={() => {
+                          setSelectedProvider(item);
+                          setMessage("");
+                        }}
                         style={actionBtnStyle}
                       >
                         Book Appointment 📅
@@ -283,6 +327,83 @@ export default function Search() {
               })}
             </div>
           )}
+        </div>
+      )}
+
+      {/* সার্চ পেজের নিজস্ব বুকিং পপআপ মোডাল */}
+      {selectedProvider && (
+        <div style={modalOverlay}>
+          <div style={modalCard}>
+            <h3>
+              Book Session with{" "}
+              {selectedProvider.name || selectedProvider.searchTitle}
+            </h3>
+            {selectedProvider.role && (
+              <p
+                style={{
+                  fontSize: "0.9rem",
+                  color: "#666",
+                  marginBottom: "10px",
+                }}
+              >
+                Role: {selectedProvider.role}
+              </p>
+            )}
+
+            {message && <div style={errorBox}>{message}</div>}
+
+            <form onSubmit={handleBookingSubmit}>
+              <div style={inputGroup}>
+                <label style={labelStyle}>Select Date:</label>
+                <input
+                  type="date"
+                  required
+                  min={today}
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
+                  style={inputStyleField}
+                />
+              </div>
+
+              <div style={inputGroup}>
+                <label style={labelStyle}>Select Time Slot:</label>
+                <input
+                  type="time"
+                  required
+                  value={timeSlot}
+                  onChange={(e) => setTimeSlot(e.target.value)}
+                  style={inputStyleField}
+                />
+              </div>
+
+              <div style={inputGroup}>
+                <label style={labelStyle}>Note (Optional):</label>
+                <textarea
+                  placeholder="Describe what you want to discuss..."
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  style={{ ...inputStyleField, height: "60px" }}
+                />
+              </div>
+
+              <div style={btnGroup}>
+                <button
+                  type="button"
+                  onClick={() => setSelectedProvider(null)}
+                  style={cancelBtn}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={bookingLoading}
+                  style={confirmBtn}
+                >
+                  {bookingLoading ? "Booking..." : "Confirm Booking"}
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
     </div>
@@ -464,4 +585,68 @@ const emptyMsgStyle = {
   fontStyle: "italic",
   textAlign: "center",
   marginTop: "20px",
+};
+
+// মোডাল স্টাইলস
+const modalOverlay = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  backgroundColor: "rgba(0, 0, 0, 0.5)",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  zIndex: 2000,
+};
+const modalCard = {
+  backgroundColor: "#fff",
+  padding: "25px",
+  borderRadius: "12px",
+  width: "90%",
+  maxWidth: "400px",
+  boxShadow: "0 10px 25px rgba(0,0,0,0.2)",
+  textAlign: "left",
+};
+const errorBox = {
+  backgroundColor: "#ffe6e6",
+  color: "#d9534f",
+  padding: "10px",
+  borderRadius: "6px",
+  fontSize: "0.85rem",
+  marginBottom: "10px",
+};
+const inputGroup = { marginBottom: "12px" };
+const labelStyle = {
+  display: "block",
+  fontSize: "0.85rem",
+  fontWeight: "600",
+  marginBottom: "4px",
+};
+const inputStyleField = {
+  width: "100%",
+  padding: "8px",
+  borderRadius: "6px",
+  border: "1px solid #ccc",
+  boxSizing: "border-box",
+};
+const btnGroup = { display: "flex", gap: "10px", marginTop: "15px" };
+const cancelBtn = {
+  flex: 1,
+  padding: "10px",
+  backgroundColor: "#eee",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+};
+const confirmBtn = {
+  flex: 1,
+  padding: "10px",
+  backgroundColor: "#ba92d6",
+  color: "#fff",
+  border: "none",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "600",
 };
