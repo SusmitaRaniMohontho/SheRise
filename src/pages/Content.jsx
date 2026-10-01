@@ -8,6 +8,7 @@ export default function EducationalContent() {
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchTerm, setSearchTerm] = useState(""); // 🔍 Search State
   const [activeArticle, setActiveArticle] = useState(null);
 
   const categories = [
@@ -50,6 +51,29 @@ export default function EducationalContent() {
     fetchData();
   }, [navigate]);
 
+  // 🔍 Filtered Articles by Category & Search Term
+  const filteredArticles = articles.filter((item) => {
+    const matchesCategory =
+      selectedCategory === "All" || item.category === selectedCategory;
+    const matchesSearch =
+      item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.summary?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
+  // 🔍 Filtered Books by Category & Search Term
+  const filteredBooks = books.filter((item) => {
+    const matchesCategory =
+      selectedCategory === "All" || item.category === selectedCategory;
+    const matchesSearch =
+      item.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.category?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.author?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.description?.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
   if (loading) {
     return (
       <div style={{ textAlign: "center", padding: "50px", color: "#666" }}>
@@ -68,6 +92,15 @@ export default function EducationalContent() {
       <p style={subtitleStyle}>
         Read short career guides and access free digital learning books.
       </p>
+
+      {/* 🔍 Search Input Field */}
+      <input
+        type="text"
+        placeholder="🔍 Search articles or books by title, author, category..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        style={searchInputStyle}
+      />
 
       <div style={categoryContainerStyle}>
         {categories.map((cat, index) => (
@@ -92,50 +125,44 @@ export default function EducationalContent() {
       <div style={sectionStyle}>
         <h2 style={subHeadingStyle}>📝 Short Articles</h2>
 
-        {articles.length === 0 ? (
-          <p style={emptyMsgStyle}>No articles found.</p>
+        {filteredArticles.length === 0 ? (
+          <p style={emptyMsgStyle}>No matching articles found.</p>
         ) : (
           <div style={gridStyle}>
-            {articles
-              .filter(
-                (item) =>
-                  selectedCategory === "All" ||
-                  item.category === selectedCategory,
-              )
-              .map((article) => {
-                const articleId = article._id || article.id;
-                return (
-                  <div key={articleId} style={cardStyle}>
-                    <div>
-                      <span style={tagStyle}>{article.category}</span>
-                      <span style={timeStyle}>{article.readTime}</span>
-                      <h3 style={titleStyle}>{article.title}</h3>
-                      <p style={descStyle}>{article.summary}</p>
-                    </div>
-
-                    <button
-                      style={actionBtn}
-                      onClick={() =>
-                        setActiveArticle(
-                          activeArticle === articleId ? null : articleId,
-                        )
-                      }
-                    >
-                      {activeArticle === articleId
-                        ? "Close Article"
-                        : "Read Article"}
-                    </button>
-
-                    {activeArticle === articleId && (
-                      <div style={articleContentStyle}>
-                        <p style={{ whiteSpace: "pre-line", margin: 0 }}>
-                          {article.fullContent}
-                        </p>
-                      </div>
-                    )}
+            {filteredArticles.map((article) => {
+              const articleId = article._id || article.id;
+              return (
+                <div key={articleId} style={cardStyle}>
+                  <div>
+                    <span style={tagStyle}>{article.category}</span>
+                    <span style={timeStyle}>{article.readTime}</span>
+                    <h3 style={titleStyle}>{article.title}</h3>
+                    <p style={descStyle}>{article.summary}</p>
                   </div>
-                );
-              })}
+
+                  <button
+                    style={actionBtn}
+                    onClick={() =>
+                      setActiveArticle(
+                        activeArticle === articleId ? null : articleId,
+                      )
+                    }
+                  >
+                    {activeArticle === articleId
+                      ? "Close Article"
+                      : "Read Article"}
+                  </button>
+
+                  {activeArticle === articleId && (
+                    <div style={articleContentStyle}>
+                      <p style={{ whiteSpace: "pre-line", margin: 0 }}>
+                        {article.fullContent}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
@@ -144,47 +171,41 @@ export default function EducationalContent() {
       <div style={sectionStyle}>
         <h2 style={subHeadingStyle}>📖 Digital Books Library</h2>
 
-        {books.length === 0 ? (
-          <p style={emptyMsgStyle}>No books found.</p>
+        {filteredBooks.length === 0 ? (
+          <p style={emptyMsgStyle}>No matching books found.</p>
         ) : (
           <div style={gridStyle}>
-            {books
-              .filter(
-                (item) =>
-                  selectedCategory === "All" ||
-                  item.category === selectedCategory,
-              )
-              .map((book) => {
-                const bookId = book._id || book.id;
-                return (
-                  <div key={bookId} style={cardStyle}>
-                    <div>
-                      <span style={tagStyle}>{book.category}</span>
-                      <span style={timeStyle}>{book.type || "PDF Book"}</span>
-                      <h3 style={titleStyle}>{book.title}</h3>
-                      <p
-                        style={{
-                          ...descStyle,
-                          fontStyle: "italic",
-                          marginBottom: "6px",
-                        }}
-                      >
-                        Author: {book.author}
-                      </p>
-                      <p style={descStyle}>{book.description}</p>
-                    </div>
-
-                    <a
-                      href={book.pdfLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={bookLinkBtn}
+            {filteredBooks.map((book) => {
+              const bookId = book._id || book.id;
+              return (
+                <div key={bookId} style={cardStyle}>
+                  <div>
+                    <span style={tagStyle}>{book.category}</span>
+                    <span style={timeStyle}>{book.type || "PDF Book"}</span>
+                    <h3 style={titleStyle}>{book.title}</h3>
+                    <p
+                      style={{
+                        ...descStyle,
+                        fontStyle: "italic",
+                        marginBottom: "6px",
+                      }}
                     >
-                      Read Book 🔗
-                    </a>
+                      Author: {book.author}
+                    </p>
+                    <p style={descStyle}>{book.description}</p>
                   </div>
-                );
-              })}
+
+                  <a
+                    href={book.pdfLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={bookLinkBtn}
+                  >
+                    Read Book 🔗
+                  </a>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
@@ -216,12 +237,22 @@ const headingStyle = {
 };
 const subtitleStyle = {
   color: "#666666",
-  marginBottom: "25px",
+  marginBottom: "20px",
   fontSize: "15px",
+};
+const searchInputStyle = {
+  width: "100%",
+  padding: "12px 16px",
+  borderRadius: "8px",
+  border: "1.5px solid #ba92d6",
+  outline: "none",
+  fontSize: "14px",
+  marginBottom: "20px",
+  boxSizing: "border-box",
 };
 const categoryContainerStyle = {
   display: "flex",
-  justifyContent: "center",
+  justify: "center",
   flexWrap: "wrap",
   gap: "10px",
   marginBottom: "35px",
@@ -255,7 +286,7 @@ const cardStyle = {
   border: "1px solid #ba92d6",
   display: "flex",
   flexDirection: "column",
-  justifyContent: "space-between",
+  justify: "space-between",
   minHeight: "200px",
 };
 const tagStyle = {

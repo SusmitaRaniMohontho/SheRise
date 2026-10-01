@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Providers() {
-  const [providers, setProviders] = useState([]); // ডাটাবেসের ডাটার জন্য খালি অ্যারে
+  const navigate = useNavigate();
+  const [providers, setProviders] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProvider, setSelectedProvider] = useState(null);
 
@@ -13,11 +15,20 @@ export default function Providers() {
 
   const today = new Date().toISOString().split("T")[0];
 
-  // ডাটাবেস থেকে প্রভাইডার নিয়ে আসার ফাংশন
+  // ডাটাবেস থেকে প্রভাইডার নিয়ে আসার ফাংশন (Login Check সহ)
   useEffect(() => {
     const fetchProviders = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/providers");
+        const response = await fetch("http://localhost:5000/api/providers", {
+          credentials: "include",
+        });
+
+        if (response.status === 401) {
+          alert("Please log in first to access Providers.");
+          navigate("/login");
+          return;
+        }
+
         const data = await response.json();
         if (response.ok) {
           setProviders(data);
@@ -27,7 +38,7 @@ export default function Providers() {
       }
     };
     fetchProviders();
-  }, []);
+  }, [navigate]);
 
   const filteredProviders = providers.filter(
     (p) =>
@@ -56,6 +67,12 @@ export default function Providers() {
         }),
       });
 
+      if (response.status === 401) {
+        alert("Session expired. Please log in again.");
+        navigate("/login");
+        return;
+      }
+
       const data = await response.json();
 
       if (response.ok) {
@@ -77,8 +94,17 @@ export default function Providers() {
 
   return (
     <div style={styles.container}>
-      <h2>Service Providers & Mentors</h2>
-      <p>Search and book appointments with experts.</p>
+      {/* Header Container for Center Alignment */}
+      <div style={styles.headerSection}>
+        <button style={styles.backBtn} onClick={() => navigate("/home")}>
+          ← Back to Home
+        </button>
+
+        <h2 style={styles.title}>Service Providers & Mentors</h2>
+        <p style={styles.subtitle}>
+          Search and book appointments with experts.
+        </p>
+      </div>
 
       <input
         type="text"
@@ -183,6 +209,31 @@ export default function Providers() {
 
 const styles = {
   container: { padding: "30px", maxWidth: "900px", margin: "0 auto" },
+  headerSection: {
+    textAlign: "center",
+    marginBottom: "20px",
+  },
+  backBtn: {
+    background: "none",
+    border: "none",
+    color: "#ba92d6",
+    fontWeight: "bold",
+    cursor: "pointer",
+    marginBottom: "15px",
+    fontSize: "15px",
+    display: "inline-block",
+  },
+  title: {
+    fontSize: "2rem",
+    color: "#111",
+    fontWeight: "bold",
+    marginBottom: "8px",
+  },
+  subtitle: {
+    color: "#666",
+    fontSize: "1rem",
+    marginBottom: "10px",
+  },
   searchInput: {
     width: "100%",
     padding: "12px",

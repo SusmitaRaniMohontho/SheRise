@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Help() {
+  const navigate = useNavigate();
   const [faqs, setFaqs] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [openFaq, setOpenFaq] = useState(null);
@@ -12,7 +14,17 @@ export default function Help() {
   useEffect(() => {
     const fetchFaqs = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/help/faqs");
+        const response = await fetch("http://localhost:5000/api/help/faqs", {
+          credentials: "include", // 👈 Session cookie pathabe
+        });
+
+        // 🔒 Unauthorized (Login kora na thakle)
+        if (response.status === 401) {
+          alert("Please log in first to access Help & Support.");
+          navigate("/login");
+          return;
+        }
+
         const result = await response.json();
         if (result.success) {
           setFaqs(result.data);
@@ -22,7 +34,7 @@ export default function Help() {
       }
     };
     fetchFaqs();
-  }, []);
+  }, [navigate]);
 
   const filteredFaqs = faqs.filter(
     (faq) =>
@@ -46,6 +58,12 @@ export default function Help() {
         body: JSON.stringify({ message }),
       });
 
+      if (response.status === 401) {
+        alert("Session expired. Please log in again.");
+        navigate("/login");
+        return;
+      }
+
       const result = await response.json();
 
       if (result.success) {
@@ -64,6 +82,10 @@ export default function Help() {
 
   return (
     <div style={containerStyle}>
+      <button style={backBtn} onClick={() => navigate("/home")}>
+        ← Back to Home
+      </button>
+
       <h1 style={headingStyle}>Help & Support Center</h1>
       <p style={subtitleStyle}>
         Find answers, emergency support and direct assistance.
@@ -160,6 +182,15 @@ const containerStyle = {
   margin: "0 auto",
   textAlign: "center",
 };
+const backBtn = {
+  background: "none",
+  border: "none",
+  color: "#ba92d6",
+  fontWeight: "bold",
+  cursor: "pointer",
+  marginBottom: "20px",
+  fontSize: "15px",
+};
 const headingStyle = {
   color: "#ba92d6",
   fontSize: "32px",
@@ -220,7 +251,7 @@ const faqQuestionBtn = {
   border: "none",
   textAlign: "left",
   display: "flex",
-  justifyContent: "space-between",
+  justify: "space-between",
   alignItems: "center",
   fontSize: "15px",
   fontWeight: "bold",

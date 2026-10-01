@@ -107,19 +107,18 @@ function Home() {
           </div>
 
           <div style={styles.quickAccessGrid}>
-            <div
-              onClick={() => navigate("/register")}
-              style={styles.featurePill}
-            >
-              <span style={styles.pillIcon}></span>
+            <div onClick={() => navigate("/jobs")} style={styles.featurePill}>
+              <span style={styles.pillIcon}>💼</span>
               <div>
-                <h4 style={styles.pillTitle}>Register</h4>
-                <p style={styles.pillDesc}>Create a new account or sign up</p>
+                <h4 style={styles.pillTitle}>Jobs & Careers</h4>
+                <p style={styles.pillDesc}>
+                  Explore career openings & opportunities
+                </p>
               </div>
             </div>
 
             <div onClick={() => navigate("/loan")} style={styles.featurePill}>
-              <span style={styles.pillIcon}></span>
+              <span style={styles.pillIcon}>💰</span>
               <div>
                 <h4 style={styles.pillTitle}>Loans & Grants</h4>
                 <p style={styles.pillDesc}>
@@ -129,20 +128,20 @@ function Home() {
             </div>
 
             <div
-              onClick={() => navigate("/library")}
+              onClick={() => navigate("/content")}
               style={styles.featurePill}
             >
-              <span style={styles.pillIcon}></span>
+              <span style={styles.pillIcon}>📚</span>
               <div>
                 <h4 style={styles.pillTitle}>Digital Assets</h4>
                 <p style={styles.pillDesc}>
-                  Access learning guides & resource library
+                  Access learning guides & resource content
                 </p>
               </div>
             </div>
 
             <div onClick={() => navigate("/help")} style={styles.featurePill}>
-              <span style={styles.pillIcon}></span>
+              <span style={styles.pillIcon}>🆘</span>
               <div>
                 <h4 style={styles.pillTitle}>Help Center</h4>
                 <p style={styles.pillDesc}>
@@ -166,7 +165,7 @@ function Home() {
 
           <div style={styles.ecosystemGrid}>
             <div style={styles.ecoCard}>
-              <div style={styles.cardHeaderIcon}></div>
+              <div style={styles.cardHeaderIcon}>🎓</div>
               <h3 style={styles.ecoTitle}>Learning & Resources</h3>
               <p style={styles.ecoText}>
                 Educational guides and digital assets for skill development.
@@ -174,21 +173,15 @@ function Home() {
               <div style={styles.cardBtnFlex}>
                 <button
                   onClick={() => navigate("/content")}
-                  style={styles.ecoBtn}
+                  style={styles.singleEcoBtn}
                 >
                   Content
-                </button>
-                <button
-                  onClick={() => navigate("/library")}
-                  style={styles.ecoBtn}
-                >
-                  Library
                 </button>
               </div>
             </div>
 
             <div style={styles.ecoCard}>
-              <div style={styles.cardHeaderIcon}></div>
+              <div style={styles.cardHeaderIcon}>🤝</div>
               <h3 style={styles.ecoTitle}>Support & Assistance</h3>
               <p style={styles.ecoText}>
                 Reach verified service providers and our dedicated help center.
@@ -207,7 +200,7 @@ function Home() {
             </div>
 
             <div style={styles.ecoCard}>
-              <div style={styles.cardHeaderIcon}></div>
+              <div style={styles.cardHeaderIcon}>🚀</div>
               <h3 style={styles.ecoTitle}>Careers & Opportunities</h3>
               <p style={styles.ecoText}>
                 Explore career openings and corporate sponsorship programs.
@@ -225,14 +218,10 @@ function Home() {
               </div>
             </div>
 
-            {/* ========================================== */}
-            {/* VIVA HIGHLIGHT: CONDITIONAL ADMIN CARD RENDERING */}
-            {/* This card is rendered ONLY if the user's systemRole is strictly 'admin'. */}
-            {/* Regular users ('user' role) will not see this card in their UI. */}
-            {/* ========================================== */}
+            {/* Conditional Admin Card Rendering */}
             {!loading && userRole === "admin" && (
               <div style={styles.ecoCardSpecial}>
-                <div style={styles.cardHeaderIcon}></div>
+                <div style={styles.cardHeaderIcon}>⚙️</div>
                 <h3 style={styles.ecoTitle}>System Management</h3>
                 <p style={styles.ecoText}>
                   Administrative overview and system management panel.
@@ -257,6 +246,11 @@ const styles = {
     backgroundColor: "#ffffff",
     minHeight: "100vh",
     width: "100%",
+    maxWidth: "100%",
+    margin: 0,
+    padding: 0,
+    boxSizing: "border-box",
+    overflowX: "hidden",
   },
   heroSection: {
     position: "relative",
@@ -268,6 +262,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    boxSizing: "border-box",
   },
   heroOverlay: {
     position: "absolute",
@@ -279,8 +274,8 @@ const styles = {
   },
   topRightActions: {
     position: "absolute",
-    top: "25px",
-    right: "30px",
+    top: "20px",
+    right: "20px",
     zIndex: 2,
   },
   actionBadgeBtn: {
@@ -288,10 +283,10 @@ const styles = {
     backdropFilter: "blur(8px)",
     color: "#ffffff",
     border: "1px solid rgba(255, 255, 255, 0.5)",
-    padding: "10px 22px",
+    padding: "8px 18px",
     borderRadius: "30px",
     fontWeight: "600",
-    fontSize: "0.95rem",
+    fontSize: "0.9rem",
     cursor: "pointer",
   },
   heroContent: {
@@ -299,33 +294,39 @@ const styles = {
     zIndex: 1,
     color: "#ffffff",
     textAlign: "center",
-    padding: "0 20px",
-    maxWidth: "850px",
+    padding: "0 15px",
+    maxWidth: "100%",
+    boxSizing: "border-box",
   },
   heroTitle: {
-    fontSize: "3.6rem",
+    fontSize: "clamp(1.8rem, 5vw, 3.6rem)", // Screen size sadhe auto match korbe
     fontWeight: "800",
     marginBottom: "15px",
     lineHeight: "1.2",
     textShadow: "0 2px 10px rgba(0,0,0,0.3)",
     color: "#ffffff",
+    wordBreak: "break-word",
+    overflowWrap: "break-word",
   },
   heroSubtitle: {
-    fontSize: "1.25rem",
-    lineHeight: "1.6",
+    fontSize: "clamp(0.95rem, 2.5vw, 1.25rem)",
+    lineHeight: "1.5",
     color: "#ffffff",
     fontWeight: "400",
     textShadow: "0 2px 8px rgba(0,0,0,0.3)",
   },
   searchSectionWrapper: {
     backgroundColor: "#f8f5fb",
-    padding: "40px 20px",
+    padding: "40px 15px",
     borderBottom: "1px solid #f0e6f7",
+    width: "100%",
+    boxSizing: "border-box",
   },
   searchContainer: {
     maxWidth: "750px",
     margin: "0 auto",
     textAlign: "center",
+    width: "100%",
   },
   searchPromptText: {
     color: "#ba92d6",
@@ -340,40 +341,48 @@ const styles = {
     borderRadius: "50px",
     boxShadow: "0 8px 20px rgba(186, 146, 214, 0.15)",
     border: "1.5px solid #ba92d6",
+    width: "100%",
+    boxSizing: "border-box",
   },
   heroSearchInput: {
     flex: 1,
     border: "none",
-    padding: "12px 24px",
-    fontSize: "1rem",
+    padding: "10px 16px",
+    fontSize: "0.95rem",
     outline: "none",
     color: "#333333",
     backgroundColor: "transparent",
+    minWidth: 0,
   },
   heroSearchBtn: {
     backgroundColor: "#ba92d6",
     color: "#ffffff",
     border: "none",
-    padding: "12px 32px",
+    padding: "10px 24px",
     borderRadius: "40px",
-    fontSize: "1rem",
+    fontSize: "0.95rem",
     fontWeight: "700",
     cursor: "pointer",
   },
   sectionContainer: {
-    padding: "50px 20px",
+    padding: "40px 15px",
     backgroundColor: "#ffffff",
+    width: "100%",
+    boxSizing: "border-box",
   },
   sectionContainerAlt: {
-    padding: "50px 20px",
+    padding: "40px 15px",
     backgroundColor: "#f8f5fb",
+    width: "100%",
+    boxSizing: "border-box",
   },
   contentWidth: {
     maxWidth: "1200px",
     margin: "0 auto",
+    width: "100%",
   },
   sectionHeaderBox: {
-    marginBottom: "30px",
+    marginBottom: "25px",
   },
   sectionTitle: {
     fontSize: "1.8rem",
@@ -388,28 +397,31 @@ const styles = {
   quickAccessGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-    gap: "20px",
+    gap: "16px",
   },
   featurePill: {
     display: "flex",
     alignItems: "center",
     gap: "15px",
     backgroundColor: "#ffffff",
-    padding: "20px",
+    padding: "18px",
     borderRadius: "16px",
     border: "1.5px solid #f0e6f7",
     boxShadow: "0 4px 15px rgba(186, 146, 214, 0.1)",
     cursor: "pointer",
   },
   pillIcon: {
-    fontSize: "1.8rem",
+    fontSize: "1.5rem",
     backgroundColor: "#f8f5fb",
     padding: "10px",
     borderRadius: "12px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
   },
   pillTitle: {
     margin: 0,
-    fontSize: "1.05rem",
+    fontSize: "1rem",
     color: "#333333",
     fontWeight: "700",
   },
@@ -420,12 +432,12 @@ const styles = {
   },
   ecosystemGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-    gap: "24px",
+    gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+    gap: "20px",
   },
   ecoCard: {
     backgroundColor: "#ffffff",
-    padding: "25px",
+    padding: "22px",
     borderRadius: "16px",
     border: "1.0px solid #eaddf5",
     boxShadow: "0 6px 18px rgba(186, 146, 214, 0.12)",
@@ -434,7 +446,7 @@ const styles = {
   },
   ecoCardSpecial: {
     backgroundColor: "#ffffff",
-    padding: "25px",
+    padding: "22px",
     borderRadius: "16px",
     border: "2px solid #ba92d6",
     boxShadow: "0 6px 18px rgba(186, 146, 214, 0.2)",
@@ -442,20 +454,20 @@ const styles = {
     flexDirection: "column",
   },
   cardHeaderIcon: {
-    fontSize: "2rem",
-    marginBottom: "12px",
+    fontSize: "1.8rem",
+    marginBottom: "10px",
   },
   ecoTitle: {
-    fontSize: "1.2rem",
+    fontSize: "1.15rem",
     color: "#ba92d6",
     fontWeight: "700",
     marginBottom: "8px",
   },
   ecoText: {
-    fontSize: "0.9rem",
+    fontSize: "0.88rem",
     color: "#666666",
     lineHeight: "1.5",
-    marginBottom: "20px",
+    marginBottom: "18px",
     flex: 1,
   },
   cardBtnFlex: {
@@ -464,6 +476,17 @@ const styles = {
   },
   ecoBtn: {
     flex: 1,
+    backgroundColor: "#ffffff",
+    color: "#ba92d6",
+    border: "1.5px solid #ba92d6",
+    padding: "10px 5px",
+    borderRadius: "8px",
+    fontWeight: "700",
+    fontSize: "0.85rem",
+    cursor: "pointer",
+  },
+  singleEcoBtn: {
+    width: "100%",
     backgroundColor: "#ffffff",
     color: "#ba92d6",
     border: "1.5px solid #ba92d6",

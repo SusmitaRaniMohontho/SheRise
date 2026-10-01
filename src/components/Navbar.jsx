@@ -15,7 +15,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // বাইরে ক্লিক করলে সাইডবার বন্ধ হয়ে যাওয়ার জন্য
+  // বাইরে ক্লিক করলে সাইডবার বন্ধ হয়ে যাওয়ার জন্য
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -125,7 +125,7 @@ export default function Navbar() {
         }}
         ref={menuRef}
       >
-        {/* রিয়েল ওয়ার্ল্ড স্টাইলের হ্যামবার্গার বাটন */}
+        {/* রিয়েল ওয়ার্ল্ড স্টাইলের হ্যামবার্গার বাটন */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           style={{
@@ -160,7 +160,7 @@ export default function Navbar() {
         </Link>
 
         {/* ========================================================= */}
-        {/* রিয়েল-ওয়ার্ল্ড সাইডবার ড্রয়ার (হোম সহ সব পেজ সাজানো) */}
+        {/* রিয়েল-ওয়ার্ল্ড সাইডবার ড্রয়ার (হোম সহ সব পেজ সাজানো) */}
         {/* ========================================================= */}
         {menuOpen && (
           <div
@@ -208,7 +208,7 @@ export default function Navbar() {
               </button>
             </div>
 
-            {/* মেনু লিস্ট (রিয়েল ওয়ার্ল্ড রুল অনুযায়ী প্রথমে 'Home' এবং বাকী পেজগুলো) */}
+            {/* মেনু লিস্ট (Digital Library sorano hoyeche) */}
             <div
               style={{ display: "flex", flexDirection: "column", gap: "4px" }}
             >
@@ -238,15 +238,6 @@ export default function Navbar() {
                 style={sidebarItemStyle}
               >
                 💰 Loans & Grants
-              </button>
-              <button
-                onClick={() => {
-                  setMenuOpen(false);
-                  navigate("/library");
-                }}
-                style={sidebarItemStyle}
-              >
-                📚 Digital Library
               </button>
               <button
                 onClick={() => {
@@ -377,7 +368,7 @@ export default function Navbar() {
   );
 }
 
-// সাইডবার ড্রয়ারের অপশনগুলোর ডিজাইন স্টাইল
+// সাইডবার ড্রয়ারের অপশনগুলোর ডিজাইন স্টাইল
 const sidebarItemStyle = {
   background: "none",
   border: "none",

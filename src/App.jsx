@@ -6,11 +6,9 @@ import Footer from "./components/Footer";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import Register from "./pages/Register";
 import Profile from "./pages/Profile";
 import Search from "./pages/Search";
 import Content from "./pages/Content";
-import DigitalLibrary from "./pages/DigitalLibrary";
 import Providers from "./pages/Providers";
 import Help from "./pages/Help";
 import Jobs from "./pages/Jobs";
@@ -31,7 +29,6 @@ function App() {
 
           {/* পাবলিক পেজ */}
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
           <Route path="/home" element={<Home />} />
           <Route path="/search" element={<Search />} />
 
@@ -39,7 +36,6 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/profile" element={<Profile />} />
             <Route path="/content" element={<Content />} />
-            <Route path="/library" element={<DigitalLibrary />} />
             <Route path="/providers" element={<Providers />} />
             <Route path="/help" element={<Help />} />
             <Route path="/jobs" element={<Jobs />} />
