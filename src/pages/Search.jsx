@@ -8,13 +8,14 @@ export default function Search() {
   const queryParam = searchParams.get("q") || "";
 
   const [query, setQuery] = useState(queryParam);
-  const [allItems, setAllItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [filteredResults, setFilteredResults] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [activeArticle, setActiveArticle] = useState(null);
   const [openFaq, setOpenFaq] = useState(null);
 
-  // সরাসরি সার্চ পেজেই বুকিং মোডাল দেখানোর জন্য স্টেটসমূহ
+  // সরাসরি সার্চ পেজেই বুকিং মোডাল দেখানোর স্টেটসমূহ
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [date, setDate] = useState("");
   const [timeSlot, setTimeSlot] = useState("");
@@ -25,75 +26,69 @@ export default function Search() {
 
   const searchRef = useRef(null);
 
-  // URL-এর কুয়েরি পরিবর্তন হলে স্টেট সিঙ্ক করা
   useEffect(() => {
     setQuery(queryParam);
   }, [queryParam]);
 
-  // ডেটা ফেচ করা
+  // ব্যাকএন্ডের গ্লোবাল সার্চ এন্ডপয়েন্ট থেকে কুয়েরি করে ডেটা আনা
   useEffect(() => {
-    const fetchSearchData = async () => {
+    const fetchSearchResults = async () => {
+      const trimmedQ = query.trim();
+      if (!trimmedQ) {
+        setFilteredResults([]);
+        setSuggestions([]);
+        setLoading(false);
+        return;
+      }
+
       try {
         setLoading(true);
-        const [articlesRes, booksRes, providersRes, faqsRes] =
-          await Promise.all([
-            axios
-              .get("http://localhost:5000/api/articles", {
-                withCredentials: true,
-              })
-              .catch(() => ({ data: [] })),
-            axios
-              .get("http://localhost:5000/api/books", { withCredentials: true })
-              .catch(() => ({ data: [] })),
-            axios
-              .get("http://localhost:5000/api/providers", {
-                withCredentials: true,
-              })
-              .catch(() => ({ data: [] })),
-            axios
-              .get("http://localhost:5000/api/help/faqs", {
-                withCredentials: true,
-              })
-              .catch(() => ({ data: { data: [] } })),
-          ]);
+        // ব্যাকএন্ডের একক সার্চ এন্ডপয়েন্ট কল করা হচ্ছে
+        const res = await axios.get(
+          `http://localhost:5000/api/search?q=${encodeURIComponent(trimmedQ)}`,
+          {
+            withCredentials: true,
+          },
+        );
 
-        const articles = (articlesRes.data || []).map((item) => ({
+        const rawResults = res.data?.results || [];
+
+        // ফ্রন্টএন্ডে তোমার সেই নিখুঁত প্রিফিক্স ম্যাচিং লজিক অ্যাপ্লাই করা হচ্ছে
+        // (যেমন 'h' বা 'html' দিয়ে সার্চ করলে টাইটেলের ওয়ার্ড শুরু হতে হবে)
+        const matched = rawResults.filter((item) => {
+          const titleText = item.title || item.name || item.question || "";
+          return checkMatch(titleText, trimmedQ);
+        });
+
+        // প্রপার রেন্ডারিংয়ের জন্য searchTitle প্রোপার্টি সেট করা
+        const formatted = matched.map((item) => ({
           ...item,
-          type: "Article",
-          searchTitle: item.title,
-          searchText: item.summary,
-        }));
-        const books = (booksRes.data || []).map((item) => ({
-          ...item,
-          type: "Book",
-          searchTitle: item.title,
-          searchText: item.description,
-        }));
-        const providers = (providersRes.data || []).map((item) => ({
-          ...item,
-          type: "Provider",
-          searchTitle: item.name,
-          searchText: item.tags,
-        }));
-        const faqs = (faqsRes.data?.data || []).map((item) => ({
-          ...item,
-          type: "FAQ",
-          searchTitle: item.question,
-          searchText: item.answer,
+          searchTitle: item.title || item.name || item.question || "",
+          searchText:
+            item.summary || item.description || item.tags || item.answer || "",
         }));
 
-        setAllItems([...articles, ...books, ...providers, ...faqs]);
+        setFilteredResults(formatted);
+        setSuggestions(formatted.slice(0, 5));
       } catch (err) {
-        console.error("Error fetching data:", err);
+        console.error("Error fetching search results:", err);
+        if (err.response && err.response.status === 401) {
+          alert("Please log in first to search and view contents.");
+          navigate("/login");
+          return;
+        }
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSearchData();
-  }, []);
+    const timer = setTimeout(() => {
+      fetchSearchResults();
+    }, 300); // Debounce
 
-  // বাইরে ক্লিক করলে ড্রপডাউন বন্ধ করা
+    return () => clearTimeout(timer);
+  }, [query, navigate]);
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -104,7 +99,7 @@ export default function Search() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // নিখুঁত ম্যাচিং লজিক
+  // তোমার নির্দিষ্ট করা প্রিফিক্স ম্যাচিং লজিক
   const checkMatch = (titleText, queryText) => {
     if (!queryText.trim()) return false;
     const qWords = queryText.trim().toLowerCase().split(/\s+/).filter(Boolean);
@@ -117,19 +112,6 @@ export default function Search() {
       titleWords.some((tWord) => tWord.startsWith(qWord)),
     );
   };
-
-  const trimmedQuery = query.trim();
-
-  const filteredResults =
-    trimmedQuery === ""
-      ? []
-      : allItems.filter((item) => checkMatch(item.searchTitle, trimmedQuery));
-
-  const suggestions = trimmedQuery
-    ? allItems
-        .filter((item) => checkMatch(item.searchTitle, trimmedQuery))
-        .slice(0, 5)
-    : [];
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
@@ -152,7 +134,7 @@ export default function Search() {
     setBookingLoading(true);
 
     try {
-      const response = await axios.post(
+      await axios.post(
         "http://localhost:5000/api/appointments",
         {
           providerId: selectedProvider._id || selectedProvider.id,
@@ -171,11 +153,18 @@ export default function Search() {
       setNote("");
     } catch (err) {
       console.error(err);
+      if (err.response && err.response.status === 401) {
+        alert("Session expired. Please log in again.");
+        navigate("/login");
+        return;
+      }
       setMessage(err.response?.data?.error || "Failed to book appointment");
     } finally {
       setBookingLoading(false);
     }
   };
+
+  const trimmedQuery = query.trim();
 
   return (
     <div style={containerStyle}>
@@ -188,7 +177,6 @@ export default function Search() {
         Search across articles, books, service providers, and FAQs instantly.
       </p>
 
-      {/* সার্চ বক্স এবং ড্রপডাউন */}
       <div style={searchContainerStyle} ref={searchRef}>
         <form onSubmit={handleSearchSubmit} style={inputWrapperStyle}>
           <input
@@ -223,7 +211,6 @@ export default function Search() {
         )}
       </div>
 
-      {/* সার্চ রেজাল্ট সেকশন */}
       {trimmedQuery !== "" && (
         <div style={sectionStyle}>
           <h2 style={subHeadingStyle}>📌 Search Results for "{query}"</h2>
@@ -507,6 +494,7 @@ const suggestionBadge = (type) => ({
   borderRadius: "4px",
   fontWeight: "bold",
 });
+
 const badgeStyle = (type) => ({
   fontSize: "11px",
   backgroundColor: `${getBadgeColor(type)}22`,
@@ -587,7 +575,6 @@ const emptyMsgStyle = {
   marginTop: "20px",
 };
 
-// মোডাল স্টাইলস
 const modalOverlay = {
   position: "fixed",
   top: 0,
