@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Loan() {
@@ -12,13 +12,35 @@ export default function Loan() {
   });
 
   const [errors, setErrors] = useState({});
+  const [myLoans, setMyLoans] = useState([]);
+  const [loadingLoans, setLoadingLoans] = useState(true);
+
+  // Fetch logged-in user's loan applications on mount
+  useEffect(() => {
+    const fetchMyLoans = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/loans/my-loans", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setMyLoans(data);
+        }
+      } catch (error) {
+        console.error("Error fetching my loans:", error);
+      } finally {
+        setLoadingLoans(false);
+      }
+    };
+
+    fetchMyLoans();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // 🔴 1. RESTRICT INVALID CHARACTER INPUTS IN REAL-TIME
-
-    // Full Name: Allow only letters and spaces (Block numbers & special chars)
+    // Full Name: Allow only letters and spaces
     if (name === "name" && value !== "" && !/^[a-zA-Z\s]*$/.test(value)) {
       return; 
     }
@@ -38,7 +60,6 @@ export default function Loan() {
       [name]: value,
     }));
 
-    // Clear field-specific error as user types
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -47,19 +68,16 @@ export default function Loan() {
   const validateForm = () => {
     const newErrors = {};
 
-    // Validate Name
     if (!formData.name.trim()) {
       newErrors.name = "Full name is required.";
     } else if (formData.name.trim().length < 2) {
       newErrors.name = "Name must be at least 2 characters.";
     }
 
-    // Validate Address
     if (!formData.address.trim()) {
       newErrors.address = "Address is required.";
     }
 
-    // Validate Phone Number
     const phoneDigits = formData.phone.replace(/\D/g, "");
     if (!formData.phone.trim()) {
       newErrors.phone = "Phone number is required.";
@@ -67,7 +85,6 @@ export default function Loan() {
       newErrors.phone = "Phone number must be between 7 and 15 digits.";
     }
 
-    // Validate Email Address
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email.trim()) {
       newErrors.email = "Email address is required.";
@@ -75,7 +92,6 @@ export default function Loan() {
       newErrors.email = "Please enter a valid email address (e.g. user@example.com).";
     }
 
-    // Validate Loan Amount
     if (!formData.amount.trim()) {
       newErrors.amount = "Loan amount is required.";
     } else if (parseFloat(formData.amount) <= 0) {
@@ -93,14 +109,12 @@ export default function Loan() {
       return;
     }
 
-    const token = localStorage.getItem("token");
-
     try {
-      const response = await fetch("http://localhost:5000/api/loans", {
+      // Fixed URL to include /apply endpoint
+      const response = await fetch("http://localhost:5000/api/loans/apply", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
         },
         credentials: "include",
         body: JSON.stringify(formData),
@@ -118,6 +132,15 @@ export default function Loan() {
           amount: "",
         });
         setErrors({});
+
+        // Refresh user's loan applications list immediately
+        const updatedLoansRes = await fetch("http://localhost:5000/api/loans/my-loans", {
+          method: "GET",
+          credentials: "include",
+        });
+        if (updatedLoansRes.ok) {
+          setMyLoans(await updatedLoansRes.json());
+        }
       } else {
         alert(data.message || "Failed to submit loan application.");
       }
@@ -136,12 +159,10 @@ export default function Loan() {
 
         <h2 style={styles.title}>Financial Loans</h2>
 
+        {/* LOAN APPLICATION FORM */}
         <form onSubmit={handleSubmit} style={styles.formCard} noValidate>
-          {/* Full Name */}
           <div style={styles.inputGroup}>
-            <label htmlFor="name" style={styles.label}>
-              Full Name
-            </label>
+            <label htmlFor="name" style={styles.label}>Full Name</label>
             <input
               type="text"
               id="name"
@@ -158,11 +179,8 @@ export default function Loan() {
             {errors.name && <span style={styles.errorText}>{errors.name}</span>}
           </div>
 
-          {/* Address */}
           <div style={styles.inputGroup}>
-            <label htmlFor="address" style={styles.label}>
-              Address
-            </label>
+            <label htmlFor="address" style={styles.label}>Address</label>
             <input
               type="text"
               id="address"
@@ -179,11 +197,8 @@ export default function Loan() {
             {errors.address && <span style={styles.errorText}>{errors.address}</span>}
           </div>
 
-          {/* Phone Number */}
           <div style={styles.inputGroup}>
-            <label htmlFor="phone" style={styles.label}>
-              Phone Number
-            </label>
+            <label htmlFor="phone" style={styles.label}>Phone Number</label>
             <input
               type="tel"
               id="phone"
@@ -201,11 +216,8 @@ export default function Loan() {
             {errors.phone && <span style={styles.errorText}>{errors.phone}</span>}
           </div>
 
-          {/* Email Address */}
           <div style={styles.inputGroup}>
-            <label htmlFor="email" style={styles.label}>
-              Email Address
-            </label>
+            <label htmlFor="email" style={styles.label}>Email Address</label>
             <input
               type="email"
               id="email"
@@ -222,11 +234,8 @@ export default function Loan() {
             {errors.email && <span style={styles.errorText}>{errors.email}</span>}
           </div>
 
-          {/* Loan Amount */}
           <div style={styles.inputGroup}>
-            <label htmlFor="amount" style={styles.label}>
-              Loan Amount ($)
-            </label>
+            <label htmlFor="amount" style={styles.label}>Loan Amount ($)</label>
             <input
               type="text"
               id="amount"
@@ -248,10 +257,51 @@ export default function Loan() {
             Submit Application
           </button>
         </form>
+
+        {/* MY SUBMITTED LOANS & STATUS TRACKER SECTION */}
+        <div style={styles.statusSection}>
+          <h3 style={styles.statusSectionTitle}>My Loan Requests & Status</h3>
+          {loadingLoans ? (
+            <p style={{ color: "#666", fontSize: "0.9rem" }}>Loading your status...</p>
+          ) : myLoans.length === 0 ? (
+            <p style={{ color: "#666", fontSize: "0.9rem", fontStyle: "italic" }}>You haven't requested any loans yet.</p>
+          ) : (
+            <div style={styles.statusGrid}>
+              {myLoans.map((loan) => (
+                <div key={loan._id} style={styles.statusCard}>
+                  <h4 style={{ margin: "0 0 5px 0", color: "#333" }}>Loan Request: ${loan.amount}</h4>
+                  <p style={{ margin: "0 0 8px 0", fontSize: "0.85rem", color: "#666" }}>Applicant: {loan.name}</p>
+                  <div>
+                    <span style={getStatusBadgeStyle(loan.status)}>
+                      {loan.status === "accepted" && "🎉 Accepted by Admin!"}
+                      {loan.status === "rejected" && "❌ Rejected by Admin."}
+                      {(!loan.status || loan.status === "pending") && "⏳ Pending Review..."}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
       </div>
     </div>
   );
 }
+
+// Helper styling for status badges
+const getStatusBadgeStyle = (status) => {
+  const base = {
+    display: "inline-block",
+    padding: "4px 10px",
+    borderRadius: "15px",
+    fontSize: "0.8rem",
+    fontWeight: "700",
+  };
+  if (status === "accepted") return { ...base, color: "#2e7d32", backgroundColor: "#e8f5e9" };
+  if (status === "rejected") return { ...base, color: "#c62828", backgroundColor: "#ffebee" };
+  return { ...base, color: "#e65100", backgroundColor: "#fff3e0" };
+};
 
 const styles = {
   pageWrapper: {
@@ -324,5 +374,29 @@ const styles = {
     cursor: "pointer",
     alignSelf: "flex-start",
     marginTop: "5px",
+  },
+  statusSection: {
+    marginTop: "30px",
+    backgroundColor: "#ffffff",
+    padding: "20px",
+    borderRadius: "14px",
+    border: "1.5px solid #eaddf5",
+    boxShadow: "0 4px 12px rgba(186, 146, 214, 0.08)",
+  },
+  statusSectionTitle: {
+    color: "#ba92d6",
+    fontSize: "1.1rem",
+    marginBottom: "15px",
+  },
+  statusGrid: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "12px",
+  },
+  statusCard: {
+    padding: "12px 15px",
+    borderRadius: "8px",
+    backgroundColor: "#fcf8ff",
+    border: "1px solid #f0e2fc",
   },
 };
