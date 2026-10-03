@@ -179,7 +179,7 @@ function Home() {
           <form onSubmit={handleSearchSubmit} style={styles.heroSearchBox}>
             <input
               type="text"
-              placeholder="Search courses, jobs, loans, mentors, or support..."
+              placeholder="Search courses, mentors, or support..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
