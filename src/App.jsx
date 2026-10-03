@@ -17,7 +17,7 @@ import Loan from "./pages/Loan";
 import { Profile } from "./pages/Profile";
 import { AdminDashboard } from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import AdminRoute from "./components/AdminRoute";
 function App() {
   return (
     <BrowserRouter>
@@ -42,7 +42,9 @@ function App() {
             <Route path="/jobs" element={<Jobs />} />
             <Route path="/sponsors" element={<Sponsors />} />
             <Route path="/loan" element={<Loan />} />
-            <Route path="/admin" element={<AdminDashboard />} />
+            <Route element={<AdminRoute />}>
+              <Route path="/admin" element={<AdminDashboard />} />
+            </Route>
           </Route>
 
           {/* Invalid URL */}

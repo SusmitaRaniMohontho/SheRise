@@ -208,12 +208,6 @@ export default function Providers() {
 
   return (
     <div style={containerStyle}>
-      {/* BACK BUTTON */}
-
-      <button style={backBtn} onClick={() => navigate("/home")}>
-        ← Back to Home
-      </button>
-
       {/* PAGE TITLE */}
 
       <h1 style={headingStyle}>Service Providers & Mentors</h1>
@@ -225,13 +219,14 @@ export default function Providers() {
       {isAdmin && (
         <div
           style={{
-            backgroundColor: "#f3e8ff",
-            color: "#6b21a8",
+            backgroundColor: "rgba(186, 146, 214, 0.15)",
+            color: "#ba92d6",
             padding: "12px 16px",
             borderRadius: "10px",
             marginBottom: "20px",
             fontSize: "14px",
             fontWeight: "600",
+            textAlign: "center",
           }}
         >
           You are viewing this page as an Admin. Appointment booking is not
@@ -450,115 +445,112 @@ export default function Providers() {
 }
 
 // ==========================================================
-// STYLES
+// STYLES (MATCHED WITH EDUCATIONAL CONTENT UI)
 // ==========================================================
 
 const containerStyle = {
-  maxWidth: "1200px",
+  padding: "40px 20px",
+  maxWidth: "850px",
   margin: "0 auto",
-  padding: "30px 20px",
+  textAlign: "center",
+  backgroundColor: "#ffffff",
   minHeight: "100vh",
 };
 
-const backBtn = {
-  border: "none",
-  background: "transparent",
-  color: "#7b4aa0",
-  fontSize: "15px",
-  fontWeight: "600",
-  cursor: "pointer",
-  marginBottom: "20px",
-};
-
 const headingStyle = {
-  textAlign: "center",
-  margin: "0",
-  color: "#333",
-  fontSize: "30px",
+  color: "#ba92d6",
+  fontSize: "32px",
+  marginBottom: "8px",
 };
 
 const subtitleStyle = {
-  textAlign: "center",
-  color: "#777",
-  marginTop: "8px",
-  marginBottom: "25px",
+  color: "#666666",
+  marginBottom: "20px",
+  fontSize: "15px",
 };
 
 const searchInputStyle = {
   width: "100%",
-  boxSizing: "border-box",
-  padding: "13px 16px",
-  border: "1px solid #ddd",
-  borderRadius: "10px",
+  padding: "12px 16px",
+  borderRadius: "8px",
+  border: "1.5px solid #ba92d6",
   outline: "none",
   fontSize: "14px",
-  marginBottom: "25px",
+  marginBottom: "20px",
+  boxSizing: "border-box",
 };
 
 const sectionStyle = {
-  marginTop: "10px",
+  marginBottom: "40px",
+  textAlign: "left",
 };
 
 const subHeadingStyle = {
-  color: "#333",
-  marginBottom: "20px",
+  color: "#ba92d6",
+  fontSize: "20px",
+  marginBottom: "15px",
+  borderBottom: "2px solid rgba(186, 146, 214, 0.3)",
+  paddingBottom: "8px",
 };
 
 const emptyMsgStyle = {
+  color: "#888888",
+  fontSize: "14px",
+  fontStyle: "italic",
   textAlign: "center",
-  color: "#777",
-  padding: "30px",
 };
 
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+  gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
   gap: "20px",
+  alignItems: "flex-start",
 };
 
 const cardStyle = {
-  backgroundColor: "#fff",
-  borderRadius: "14px",
+  backgroundColor: "#ffffff",
   padding: "20px",
-  minHeight: "180px",
+  borderRadius: "16px",
+  border: "1px solid #ba92d6",
   display: "flex",
   flexDirection: "column",
-  justifyContent: "space-between",
-  boxShadow: "0 4px 15px rgba(0, 0, 0, 0.08)",
-  border: "1px solid #eee",
+  justify: "space-between",
+  minHeight: "200px",
 };
 
 const tagStyle = {
-  display: "inline-block",
-  backgroundColor: "#f3e8ff",
-  color: "#7b4aa0",
-  padding: "5px 10px",
-  borderRadius: "20px",
-  fontSize: "12px",
+  backgroundColor: "rgba(186, 146, 214, 0.15)",
+  color: "#ba92d6",
+  padding: "4px 10px",
+  borderRadius: "6px",
+  fontSize: "11px",
   fontWeight: "bold",
+  display: "inline-block",
 };
 
 const titleStyle = {
-  color: "#333",
-  margin: "12px 0 8px 0",
-  fontSize: "19px",
+  margin: "12px 0 6px 0",
+  color: "#333333",
+  fontSize: "17px",
 };
 
 const descStyle = {
-  color: "#666",
-  fontSize: "14px",
-  lineHeight: "1.5",
+  fontSize: "13px",
+  color: "#666666",
+  lineHeight: "1.4",
+  marginBottom: "15px",
 };
 
 const actionBtn = {
+  padding: "8px 12px",
+  backgroundColor: "#ba92d6",
+  color: "#ffffff",
   border: "none",
-  backgroundColor: "#7b4aa0",
-  color: "#fff",
-  padding: "10px 15px",
   borderRadius: "8px",
   cursor: "pointer",
-  fontWeight: "600",
-  fontSize: "14px",
+  fontWeight: "bold",
+  fontSize: "13px",
+  alignSelf: "flex-start",
 };
 
 const modalOverlayStyle = {
@@ -579,10 +571,11 @@ const modalContentStyle = {
   width: "100%",
   maxWidth: "450px",
   backgroundColor: "#fff",
-  borderRadius: "15px",
+  borderRadius: "16px",
   padding: "25px",
   boxSizing: "border-box",
-  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
+  border: "1px solid #ba92d6",
+  boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)",
 };
 
 const labelStyle = {
@@ -597,7 +590,7 @@ const formInputStyle = {
   width: "100%",
   boxSizing: "border-box",
   padding: "10px 12px",
-  border: "1px solid #ddd",
+  border: "1.5px solid #ba92d6",
   borderRadius: "8px",
   outline: "none",
   fontSize: "14px",
@@ -608,10 +601,11 @@ const cancelBtnStyle = {
   border: "1px solid #ccc",
   backgroundColor: "#fff",
   color: "#555",
-  padding: "10px 15px",
+  padding: "8px 12px",
   borderRadius: "8px",
   cursor: "pointer",
-  fontWeight: "600",
+  fontWeight: "bold",
+  fontSize: "13px",
 };
 
 const errorMessageStyle = {
