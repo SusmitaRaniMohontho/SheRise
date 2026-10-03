@@ -18,6 +18,8 @@ import { Profile } from "./pages/Profile";
 import { AdminDashboard } from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminRoute from "./components/AdminRoute";
+import CarbonFootprintDisplay from "./components/CarbonFootprintDisplay";
+
 function App() {
   return (
     <BrowserRouter>
@@ -51,6 +53,8 @@ function App() {
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </main>
+
+      <CarbonFootprintDisplay />
 
       <Footer />
     </BrowserRouter>
