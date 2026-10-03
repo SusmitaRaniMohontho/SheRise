@@ -13,7 +13,6 @@ function AdminDashboard() {
 
   const [jobApplications, setJobApplications] = useState([]);
   const [loanApplications, setLoanApplications] = useState([]);
-  const [helpMessages, setHelpMessages] = useState([]);
 
   // ==========================================================
   // SUSMITA'S WORK — APPOINTMENT DATA STATES
@@ -34,18 +33,13 @@ function AdminDashboard() {
       try {
         setLoading(true);
 
-        const [jobsRes, loansRes, helpRes] = await Promise.all([
+        const [jobsRes, loansRes] = await Promise.all([
           fetch("http://localhost:5000/api/jobs", {
             method: "GET",
             credentials: "include",
           }),
 
           fetch("http://localhost:5000/api/loans", {
-            method: "GET",
-            credentials: "include",
-          }),
-
-          fetch("http://localhost:5000/api/help", {
             method: "GET",
             credentials: "include",
           }),
@@ -82,15 +76,6 @@ function AdminDashboard() {
 
         if (loansRes.ok) {
           setLoanApplications(await loansRes.json());
-        }
-
-        // =====================================================
-        // MAHI'S EXISTING HELP CODE
-        // DO NOT MODIFY
-        // =====================================================
-
-        if (helpRes.ok) {
-          setHelpMessages(await helpRes.json());
         }
       } catch (error) {
         console.error("Error fetching admin data:", error);
@@ -312,21 +297,6 @@ function AdminDashboard() {
         </button>
 
         {/* ====================================================
-            MAHI'S WORK — HELP TAB
-        ===================================================== */}
-
-        <button
-          onClick={() => setActiveTab("help")}
-          style={{
-            ...adminStyles.tabBtn,
-            backgroundColor: activeTab === "help" ? "#ba92d6" : "#f3eafd",
-            color: activeTab === "help" ? "#ffffff" : "#ba92d6",
-          }}
-        >
-          Help Requests ({helpMessages.length})
-        </button>
-
-        {/* ====================================================
             SUSMITA'S WORK — APPOINTMENT TAB
         ===================================================== */}
 
@@ -493,42 +463,6 @@ function AdminDashboard() {
                         Reject
                       </button>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ====================================================
-            MAHI'S WORK — HELP TAB
-            DO NOT MODIFY
-        ===================================================== */}
-
-        {activeTab === "help" && (
-          <div>
-            <h2>Help & Support Messages</h2>
-
-            {helpMessages.length === 0 ? (
-              <p style={adminStyles.noData}>No support messages found.</p>
-            ) : (
-              <div style={adminStyles.cardGrid}>
-                {helpMessages.map((msg, index) => (
-                  <div key={msg._id || index} style={adminStyles.card}>
-                    <h3>Support Inquiry</h3>
-
-                    <p>
-                      <strong>Name:</strong> {msg.name || "N/A"}
-                    </p>
-
-                    <p>
-                      <strong>Email:</strong> {msg.email || "N/A"}
-                    </p>
-
-                    <p>
-                      <strong>Message:</strong>{" "}
-                      {msg.message || msg.query || "No details provided."}
-                    </p>
                   </div>
                 ))}
               </div>
