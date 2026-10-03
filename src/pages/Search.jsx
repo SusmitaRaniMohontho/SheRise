@@ -168,10 +168,6 @@ export default function Search() {
 
   return (
     <div style={containerStyle}>
-      <button style={backBtn} onClick={() => navigate("/home")}>
-        ← Back to Home
-      </button>
-
       <h1 style={headingStyle}>Global Search</h1>
       <p style={subtitleStyle}>
         Search across articles, books, service providers, and FAQs instantly.
@@ -406,15 +402,7 @@ const containerStyle = {
   backgroundColor: "#ffffff",
   minHeight: "100vh",
 };
-const backBtn = {
-  background: "none",
-  border: "none",
-  color: "#ba92d6",
-  fontWeight: "bold",
-  cursor: "pointer",
-  marginBottom: "20px",
-  fontSize: "15px",
-};
+
 const headingStyle = {
   color: "#ba92d6",
   fontSize: "32px",
