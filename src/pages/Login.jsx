@@ -117,19 +117,40 @@ function Login() {
       }
 
       // ==========================================
-      // ERROR
+      // ERROR (User-Friendly Mapping)
       // ==========================================
       else {
-        setErrorMessage(
-          data.message ||
-            data.error ||
-            "Something went wrong. Please try again.",
-        );
+        const backendMsg = data.message || data.error || "";
+        const lowerMsg = backendMsg.toLowerCase();
+
+        let friendlyMessage = "Something went wrong. Please try again.";
+
+        if (
+          lowerMsg.includes("password") ||
+          lowerMsg.includes("credential") ||
+          lowerMsg.includes("match")
+        ) {
+          friendlyMessage =
+            "Incorrect email or password. Please check and try again.";
+        } else if (
+          lowerMsg.includes("not found") ||
+          lowerMsg.includes("exist") ||
+          lowerMsg.includes("user")
+        ) {
+          friendlyMessage =
+            "No account found with this email. Please sign up first.";
+        } else if (backendMsg) {
+          friendlyMessage = backendMsg;
+        }
+
+        setErrorMessage(friendlyMessage);
       }
     } catch (error) {
       console.error("Connection error:", error);
 
-      setErrorMessage("Server error. Please make sure the backend is running.");
+      setErrorMessage(
+        "Unable to connect to the server. Please check your network connection.",
+      );
     }
   };
 
