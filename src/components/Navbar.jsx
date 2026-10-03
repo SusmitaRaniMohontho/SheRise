@@ -6,8 +6,8 @@ export default function Navbar() {
   const location = useLocation();
 
   const [userName, setUserName] = useState("");
-  // ==========================================
-  // VIVA HIGHLIGHT: ADMIN ROLE STATE IN NAVBAR
+  // =========================================
+  //  ADMIN ROLE STATE IN NAVBAR
   // State to track if the logged-in user has 'admin' system role.
   // ==========================================
   const [userRole, setUserRole] = useState("user");
@@ -15,7 +15,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // বাইরে ক্লিক করলে সাইডবার বন্ধ হয়ে যাওয়ার জন্য
+  // baire click korle server off hoye jbe
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -125,7 +125,7 @@ export default function Navbar() {
         }}
         ref={menuRef}
       >
-        {/* রিয়েল ওয়ার্ল্ড স্টাইলের হ্যামবার্গার বাটন */}
+        {/* hamburger button */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           style={{
@@ -160,7 +160,7 @@ export default function Navbar() {
         </Link>
 
         {/* ========================================================= */}
-        {/* রিয়েল-ওয়ার্ল্ড সাইডবার ড্রয়ার (হোম সহ সব পেজ সাজানো) */}
+        {/* sidebar drawer */}
         {/* ========================================================= */}
         {menuOpen && (
           <div
@@ -180,7 +180,7 @@ export default function Navbar() {
               animation: "slideInLeft 0.3s ease-out",
             }}
           >
-            {/* সাইডবার হেডার ও ক্লোজ বাটন */}
+            {/* sidebar header and close button */}
             <div
               style={{
                 display: "flex",
@@ -208,7 +208,7 @@ export default function Navbar() {
               </button>
             </div>
 
-            {/* মেনু লিস্ট (Digital Library sorano hoyeche) */}
+            {/* menue list */}
             <div
               style={{ display: "flex", flexDirection: "column", gap: "4px" }}
             >
@@ -290,7 +290,7 @@ export default function Navbar() {
               ></div>
 
               {/* ========================================== */}
-              {/* VIVA HIGHLIGHT: CONDITIONAL ADMIN SIDEBAR BUTTON */}
+              {/*  CONDITIONAL ADMIN SIDEBAR BUTTON */}
               {/* Rendered ONLY if userRole is strictly 'admin'. */}
               {/* Regular users will not see this option in the drawer. */}
               {/* ========================================== */}
@@ -368,7 +368,7 @@ export default function Navbar() {
   );
 }
 
-// সাইডবার ড্রয়ারের অপশনগুলোর ডিজাইন স্টাইল
+// design the options of sidebar drawer
 const sidebarItemStyle = {
   background: "none",
   border: "none",

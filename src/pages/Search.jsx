@@ -15,7 +15,7 @@ export default function Search() {
   const [activeArticle, setActiveArticle] = useState(null);
   const [openFaq, setOpenFaq] = useState(null);
 
-  // সরাসরি সার্চ পেজেই বুকিং মোডাল দেখানোর স্টেটসমূহ
+  // direct seach page e dekhanor booking model
   const [selectedProvider, setSelectedProvider] = useState(null);
   const [date, setDate] = useState("");
   const [timeSlot, setTimeSlot] = useState("");
@@ -30,7 +30,7 @@ export default function Search() {
     setQuery(queryParam);
   }, [queryParam]);
 
-  // ব্যাকএন্ডের গ্লোবাল সার্চ এন্ডপয়েন্ট থেকে কুয়েরি করে ডেটা আনা
+  // backend er global search er endpoint theke query data ana
   useEffect(() => {
     const fetchSearchResults = async () => {
       const trimmedQ = query.trim();
@@ -43,7 +43,7 @@ export default function Search() {
 
       try {
         setLoading(true);
-        // ব্যাকএন্ডের একক সার্চ এন্ডপয়েন্ট কল করা হচ্ছে
+        // call search endpoint of backend
         const res = await axios.get(
           `http://localhost:5000/api/search?q=${encodeURIComponent(trimmedQ)}`,
           {
@@ -53,14 +53,13 @@ export default function Search() {
 
         const rawResults = res.data?.results || [];
 
-        // ফ্রন্টএন্ডে তোমার সেই নিখুঁত প্রিফিক্স ম্যাচিং লজিক অ্যাপ্লাই করা হচ্ছে
-        // (যেমন 'h' বা 'html' দিয়ে সার্চ করলে টাইটেলের ওয়ার্ড শুরু হতে হবে)
+        //apply prefix matching logic
         const matched = rawResults.filter((item) => {
           const titleText = item.title || item.name || item.question || "";
           return checkMatch(titleText, trimmedQ);
         });
 
-        // প্রপার রেন্ডারিংয়ের জন্য searchTitle প্রোপার্টি সেট করা
+        // for proper rendering searchTitle property set
         const formatted = matched.map((item) => ({
           ...item,
           searchTitle: item.title || item.name || item.question || "",
@@ -99,7 +98,7 @@ export default function Search() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // তোমার নির্দিষ্ট করা প্রিফিক্স ম্যাচিং লজিক
+  // prefix matching logic
   const checkMatch = (titleText, queryText) => {
     if (!queryText.trim()) return false;
     const qWords = queryText.trim().toLowerCase().split(/\s+/).filter(Boolean);
@@ -127,7 +126,7 @@ export default function Search() {
     navigate(`/search?q=${encodeURIComponent(item.searchTitle)}`);
   };
 
-  // সার্চ পেজ থেকেই সরাসরি অ্যাপয়েন্টমেন্ট সাবমিট করার ফাংশন
+  // appoint submission from search page
   const handleBookingSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -273,7 +272,7 @@ export default function Search() {
                       </>
                     )}
 
-                    {/* প্রোভাইডার হলে সরাসরি সার্চ পেজেই বুকিং মোডাল ওপেন হবে */}
+                    {/* provider logic */}
                     {item.type === "Provider" && (
                       <button
                         onClick={() => {
@@ -313,7 +312,7 @@ export default function Search() {
         </div>
       )}
 
-      {/* সার্চ পেজের নিজস্ব বুকিং পপআপ মোডাল */}
+      {/* booking popup msg*/}
       {selectedProvider && (
         <div style={modalOverlay}>
           <div style={modalCard}>

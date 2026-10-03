@@ -16,7 +16,7 @@ function Home() {
   const [userRole, setUserRole] = useState("user");
   const [loading, setLoading] = useState(true);
 
-  // ১. ইউজার প্রোফাইল থেকে রোল চেক করা
+  // 1.roll check from user profile
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
@@ -41,7 +41,7 @@ function Home() {
     fetchUserProfile();
   }, []);
 
-  // ২. সার্চের জন্য সব কন্টেন্ট, প্রোভাইডার এবং FAQ সঠিকভাবে ফেচ করা
+  // 2.fetch content,provider,faq for search
   useEffect(() => {
     const fetchSearchData = async () => {
       try {
@@ -83,7 +83,7 @@ function Home() {
           searchTitle: item.name,
         }));
 
-        // FAQ এর প্রশ্নগুলো সঠিকভাবে ম্যাপ করা
+        // FAQ er question gulo mapping
         const rawFaqs = faqsRes.data;
         const faqList = Array.isArray(rawFaqs)
           ? rawFaqs
@@ -104,7 +104,7 @@ function Home() {
     fetchSearchData();
   }, []);
 
-  // ৩. বাইরে ক্লিক করলে ড্রপডাউন বন্ধ করার জন্য
+  // 3.baire click kore dropdown off
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
@@ -115,7 +115,7 @@ function Home() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // ৪. ফিল্টারিং: টাইটেলের যেকোনো শব্দের শুরু (Word Boundary) থেকে ম্যাচ করলে আসবে
+  // 4.filtering:
   const trimmedQuery = searchQuery.trim().toLowerCase();
   const suggestions = trimmedQuery
     ? allItems
@@ -131,7 +131,7 @@ function Home() {
     e.preventDefault();
     setShowDropdown(false);
 
-    // কুয়েরি খালি থাকলে সার্চ পেজে যাবে না (প্রফেশনাল বিহেভিয়ার)
+    // query khali thakle search page e jbe na
     if (!searchQuery.trim()) {
       return;
     }
@@ -193,7 +193,7 @@ function Home() {
             </button>
           </form>
 
-          {/* ড্রপডাউন সাজেশন বক্স */}
+          {/* dropdown suggestion box*/}
           {showDropdown && suggestions.length > 0 && (
             <ul style={styles.dropdownStyle}>
               {suggestions.map((item, index) => (

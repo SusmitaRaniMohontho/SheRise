@@ -5,10 +5,10 @@ const ProtectedRoute = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
-    // ব্যাকএন্ডে কুকি সহ রিকোয়েস্ট পাঠিয়ে সেশন চেক করা
+    //send request with cookie to backend and check
     fetch("http://localhost:5000/api/auth/profile", {
       method: "GET",
-      credentials: "include", // HttpOnly কুকি পাঠানোর জন্য অত্যন্ত জরুরি[span_1](start_span)[span_1](end_span)
+      credentials: "include", //for HttpOnly cookie send
     })
       .then((res) => {
         if (res.ok) {
@@ -22,7 +22,7 @@ const ProtectedRoute = () => {
       });
   }, []);
 
-  // কুকি চেক হওয়ার আগ পর্যন্ত লোডিং দেখাবে
+  // cookie check howa obdhi loading dekhabe
   if (isAuthenticated === null) {
     return (
       <div style={{ textAlign: "center", marginTop: "50px", fontSize: "18px" }}>
@@ -31,7 +31,7 @@ const ProtectedRoute = () => {
     );
   }
 
-  // লগইন করা থাকলে ভেতরের পেজ দেখাবে, না থাকলে লগইন পেজে পাঠিয়ে দেবে
+  // login kora thakle vtrer page dekhabe, na thakle login e pathiye dbe
   return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
