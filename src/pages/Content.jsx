@@ -84,10 +84,6 @@ export default function EducationalContent() {
 
   return (
     <div style={containerStyle}>
-      <button style={backBtn} onClick={() => navigate("/home")}>
-        ← Back to Home
-      </button>
-
       <h1 style={headingStyle}>Content</h1>
       <p style={subtitleStyle}>
         Read short career guides and access free digital learning books.
@@ -221,15 +217,6 @@ const containerStyle = {
   textAlign: "center",
   backgroundColor: "#ffffff",
 };
-const backBtn = {
-  background: "none",
-  border: "none",
-  color: "#ba92d6",
-  fontWeight: "bold",
-  cursor: "pointer",
-  marginBottom: "20px",
-  fontSize: "15px",
-};
 const headingStyle = {
   color: "#ba92d6",
   fontSize: "32px",
@@ -252,7 +239,7 @@ const searchInputStyle = {
 };
 const categoryContainerStyle = {
   display: "flex",
-  justify: "center",
+  justifyContent: "center",
   flexWrap: "wrap",
   gap: "10px",
   marginBottom: "35px",
@@ -286,7 +273,7 @@ const cardStyle = {
   border: "1px solid #ba92d6",
   display: "flex",
   flexDirection: "column",
-  justify: "space-between",
+  justifyContent: "space-between",
   minHeight: "200px",
 };
 const tagStyle = {

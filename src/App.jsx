@@ -6,7 +6,7 @@ import Footer from "./components/Footer";
 
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import Profile from "./pages/Profile";
+
 import Search from "./pages/Search";
 import Content from "./pages/Content";
 import Providers from "./pages/Providers";
@@ -14,7 +14,8 @@ import Help from "./pages/Help";
 import Jobs from "./pages/Jobs";
 import Sponsors from "./pages/Sponsors";
 import Loan from "./pages/Loan";
-import AdminDashboard from "./pages/AdminDashboard";
+import { Profile } from "./pages/Profile";
+import { AdminDashboard } from "./pages/AdminDashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
@@ -24,15 +25,15 @@ function App() {
 
       <main>
         <Routes>
-          {/* রুট ইউআরএল */}
+          {/* Root URL */}
           <Route path="/" element={<Navigate to="/login" replace />} />
 
-          {/* পাবলিক পেজ */}
+          {/* Public pages */}
           <Route path="/login" element={<Login />} />
           <Route path="/home" element={<Home />} />
           <Route path="/search" element={<Search />} />
 
-          {/* প্রটেক্টেড রুটস (যেগুলোতে শুধু লগইন করা ইউজাররা ঢুকতে পারবে) */}
+          {/* Protected pages */}
           <Route element={<ProtectedRoute />}>
             <Route path="/profile" element={<Profile />} />
             <Route path="/content" element={<Content />} />
@@ -44,7 +45,7 @@ function App() {
             <Route path="/admin" element={<AdminDashboard />} />
           </Route>
 
-          {/* কোনো ভুল ইউআরএলে গেলে */}
+          {/* Invalid URL */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </main>
