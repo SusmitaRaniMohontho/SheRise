@@ -25,10 +25,10 @@ export default function Search() {
   const today = new Date().toISOString().split("T")[0];
 
   const searchRef = useRef(null);
-
+  //url e r cng hole update hoi
   useEffect(() => {
     setQuery(queryParam);
-  }, [queryParam]);
+  }, [queryParam]); //queryparam cng hole abr colbe
 
   // backend er global search er endpoint theke query data ana
   useEffect(() => {
@@ -43,7 +43,7 @@ export default function Search() {
 
       try {
         setLoading(true);
-        // call search endpoint of backend
+        // search query backend e pathacche
         const res = await axios.get(
           `http://localhost:5000/api/search?q=${encodeURIComponent(trimmedQ)}`,
           {
